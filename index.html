@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SFERA — Autovalutazione allenamento</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --purple:#7F77DD;--purple-bg:rgba(127,119,221,0.15);--teal:#1D9E75;--teal-bg:rgba(29,158,117,0.12);
+    --bg:#ffffff;--bg2:#f5f5f7;--bg3:#ebebed;--border:#e0e0e5;--border2:#d0d0d8;
+    --text:#1a1a1f;--text2:#6b6b78;--text3:#9b9ba8;--radius:12px;--radius-sm:8px;
+    --success-bg:#eaf3de;--success-border:#8dc63f;--success-text:#3a6a00;
+    --danger-bg:#fcebeb;--danger-border:#e24b4a;--danger-text:#a01010;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#1a1a1f;--bg2:#242429;--bg3:#2e2e35;--border:#38383f;--border2:#46464f;--text:#f0f0f5;--text2:#9898a8;--text3:#606070;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg2);color:var(--text);min-height:100vh}
+  .page{display:none;padding:1.5rem 1rem 3rem;max-width:620px;margin:0 auto}
+  .page.active{display:block}
+  .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px}
+  .sec-lbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 .625rem}
+  .flabel{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+  .fsub{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.4}
+  .req{color:#e24b4a}
+  input[type=text],input[type=date],input[type=password],input[type=email],textarea,select{
+    width:100%;padding:9px 11px;font-size:14px;border:1px solid var(--border2);
+    border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);
+    font-family:var(--font);outline:none;transition:border-color .15s
+  }
+  input:focus,textarea:focus,select:focus{border-color:var(--purple)}
+  textarea{resize:vertical;min-height:68px}
+  .scale-row{display:flex;align-items:center;gap:8px}
+  .slbl{font-size:11px;color:var(--text3);min-width:40px}
+  .slbl.r{text-align:right}
+  .sbtns{display:flex;gap:5px;flex:1}
+  .sbtn{flex:1;height:36px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
+  .sbtn:hover{background:var(--bg3)}
+  .sbtn.sel{background:var(--purple);border-color:var(--purple);color:#fff}
+  .fat-row{display:flex;gap:6px;flex-wrap:wrap}
+  .fbtn{flex:1;min-width:44px;padding:9px 4px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;text-align:center;transition:all .12s}
+  .fbtn .fn{font-size:15px;font-weight:600;color:var(--text)}
+  .fbtn .fl{font-size:10px;color:var(--text2);margin-top:2px}
+  .fbtn.fv1,.fbtn.fv2{background:#eaf3de;border-color:#639922}
+  .fbtn.fv3{background:#faeeda;border-color:#ef9f27}
+  .fbtn.fv4{background:#faece7;border-color:#d85a30}
+  .fbtn.fv5,.fbtn.fv6{background:#fcebeb;border-color:#e24b4a}
+  .btn-p{background:var(--purple);color:#fff;border:none;border-radius:var(--radius-sm);padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:background .15s}
+  .btn-p:hover{background:#534AB7}
+  .btn-p:disabled{background:#aaa;cursor:not-allowed}
+  .btn-s{background:var(--bg2);color:var(--text);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 14px;font-size:13px;cursor:pointer;transition:background .12s}
+  .btn-s:hover{background:var(--bg3)}
+  .badge{display:inline-flex;align-items:center;gap:5px;background:#eeedfe;border-radius:var(--radius-sm);padding:4px 11px;font-size:12px;font-weight:600;color:#3C3489;margin-bottom:.875rem}
+  .badge-staff{background:#e1f5ee;color:#085041}
+  .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:8px;margin-bottom:1rem}
+  .metric{background:var(--bg2);border-radius:var(--radius-sm);padding:.875rem}
+  .ml{font-size:11px;color:var(--text2);margin-bottom:3px}
+  .mv{font-size:21px;font-weight:600;color:var(--text)}
+  .tab-row{display:flex;gap:5px;margin-bottom:.875rem;flex-wrap:wrap}
+  .tab{padding:7px 13px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .12s}
+  .tab.active{background:var(--purple);border-color:var(--purple);color:#fff}
+  .toast{display:none;background:var(--success-bg);border:1px solid var(--success-border);color:var(--success-text);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-top:10px;text-align:center}
+  .err{display:none;background:var(--danger-bg);border:1px solid var(--danger-border);color:var(--danger-text);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;margin-top:8px}
+  .info{background:var(--bg2);border-left:3px solid var(--purple);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.5}
+  .user-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+  .av{width:36px;height:36px;border-radius:50%;background:#eeedfe;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#3C3489;flex-shrink:0}
+  .av.staff{background:#e1f5ee;color:#085041}
+  .nav-bar{display:flex;gap:4px;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:.875rem;flex-wrap:wrap}
+  .nav-btn{padding:7px 12px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .12s}
+  .nav-btn:hover{background:var(--bg2)}
+  .nav-btn.active{background:#eeedfe;color:#3C3489}
+  .athlete-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:.875rem 1.125rem;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+  .athlete-card:hover{border-color:var(--purple)}
+  .athlete-card.sel{border:2px solid var(--purple);background:#eeedfe}
+  .sfera-pill{font-size:11px;padding:2px 7px;border-radius:6px;background:#eeedfe;color:#3C3489;font-weight:600}
+  .sfera-mini{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .loading{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2);padding:.625rem 0}
+  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .period-select{width:auto;padding:7px 11px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text)}
+  .hist-row{border-bottom:1px solid var(--border);padding:11px 0}
+  .hist-row:last-child{border-bottom:none}
+  .sync-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;padding:.5rem .875rem;background:var(--bg2);border-radius:var(--radius-sm);font-size:12px;color:var(--text2)}
+  .header-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-top:.5rem}
+  .logo-icon{width:44px;height:44px;background:var(--purple);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+  .setup-card{background:#eeedfe;border:1px solid #c5c0f5;border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem}
+  .setup-card h3{font-size:14px;font-weight:600;color:#3C3489;margin-bottom:6px}
+  .setup-card p{font-size:13px;color:#5550a0;margin-bottom:10px;line-height:1.5}
+  .session-saved{display:none;background:#eeedfe;border:1px solid #c5c0f5;border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;color:#3C3489;margin-top:8px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="pg-login" class="page active">
+  <div class="header-logo">
+    <div class="logo-icon"><i class="ti ti-chart-radar"></i></div>
+    <div>
+      <div style="font-size:20px;font-weight:700;color:var(--text)">Sistema SFERA</div>
+      <div style="font-size:13px;color:var(--text2)">Autovalutazione allenamento</div>
+    </div>
+  </div>
+
+  <div class="setup-card" id="setup-banner">
+    <h3><i class="ti ti-settings" style="font-size:14px;margin-right:4px"></i>Configurazione Apps Script</h3>
+    <p>Inserisci l'URL del tuo Google Apps Script. Serve solo una volta su questo dispositivo.</p>
+    <input type="text" id="gs-url-global" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;font-size:13px"/>
+    <button onclick="saveGsUrl()" class="btn-p" style="font-size:13px">Salva e continua</button>
+  </div>
+
+  <div class="card">
+    <div class="flabel" style="margin-bottom:7px">Email</div>
+    <input type="email" id="l-email" placeholder="nome@esempio.com" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="flabel" style="margin-bottom:7px">Password</div>
+    <input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="err" id="l-err"></div>
+    <button class="btn-p" style="margin-top:14px" id="l-btn" onclick="doLogin()">Accedi</button>
+    <div class="session-saved" id="session-saved"><i class="ti ti-check"></i> Sessione ripristinata</div>
+    <div style="text-align:center;margin-top:10px">
+      <button class="btn-s" onclick="toggleReg()" style="font-size:12px">Primo accesso? Registrati</button>
+    </div>
+  </div>
+
+  <div id="reg-box" style="display:none">
+    <div class="sec-lbl">Crea account</div>
+    <div class="card">
+      <div class="flabel" style="margin-bottom:7px">Nome e cognome</div>
+      <input type="text" id="r-nome" placeholder="Es. Giulia Rossi" style="margin-bottom:11px"/>
+      <div class="flabel" style="margin-bottom:7px">Ruolo</div>
+      <select id="r-ruolo" style="margin-bottom:11px">
+        <option value="">Seleziona ruolo</option>
+        <option value="atleta|Palleggiatrice">Palleggiatrice</option>
+        <option value="atleta|Opposta">Opposta</option>
+        <option value="atleta|Schiacciatrice">Schiacciatrice</option>
+        <option value="atleta|Centrale">Centrale</option>
+        <option value="atleta|Libero">Libero</option>
+        <option value="staff|Staff tecnico">Staff tecnico</option>
+      </select>
+      <div class="flabel" style="margin-bottom:7px">Email</div>
+      <input type="email" id="r-email" placeholder="nome@esempio.com" style="margin-bottom:11px"/>
+      <div class="flabel" style="margin-bottom:7px">Password</div>
+      <input type="password" id="r-pass" placeholder="min. 6 caratteri"/>
+      <div class="err" id="r-err"></div>
+      <button class="btn-p" style="margin-top:14px" id="r-btn" onclick="doRegister()">Crea account</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="pg-app" class="page">
+  <div class="user-bar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="av" id="u-av"></div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)" id="u-name"></div>
+        <div style="font-size:12px;color:var(--text2)" id="u-role-lbl"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-s" id="btn-csv" onclick="exportCSV()" style="font-size:12px;display:none"><i class="ti ti-download"></i> CSV</button>
+      <button class="btn-s" onclick="doLogout()" style="font-size:12px"><i class="ti ti-logout"></i> Esci</button>
+    </div>
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn active" onclick="goNav(this,'vw-form')"><i class="ti ti-clipboard-list" style="font-size:14px;margin-right:3px"></i>Scheda</button>
+    <button class="nav-btn" onclick="goNav(this,'vw-mydata')"><i class="ti ti-user" style="font-size:14px;margin-right:3px"></i>I miei dati</button>
+    <button class="nav-btn" id="nav-staff" style="display:none" onclick="goNav(this,'vw-staff')"><i class="ti ti-users" style="font-size:14px;margin-right:3px"></i>Squadra</button>
+  </div>
+
+  <!-- SCHEDA -->
+  <div id="vw-form">
+    <div class="sec-lbl">Dati sessione</div>
+    <div class="card">
+      <div class="flabel" style="margin-bottom:6px">Data allenamento <span class="req">*</span></div>
+      <input type="date" id="f-data"/>
+    </div>
+    <div class="card">
+      <div class="flabel" style="margin-bottom:6px">Tipo di allenamento</div>
+      <select id="f-tipo">
+        <option>Tecnico-tattico</option><option>Fisico</option>
+        <option>Match simulation</option><option>Video analisi</option><option>Allenamento misto</option>
+      </select>
+    </div>
+    <div class="sec-lbl">Stanchezza percepita (RPE)</div>
+    <div class="card">
+      <div class="flabel">Come ti senti fisicamente? <span class="req">*</span></div>
+      <div class="fsub">1 = fresca e riposata &nbsp;·&nbsp; 6 = esausta</div>
+      <div class="fat-row" id="fat-row">
+        <button class="fbtn" onclick="selFat(this,1)" type="button"><div class="fn">1</div><div class="fl">Fresca</div></button>
+        <button class="fbtn" onclick="selFat(this,2)" type="button"><div class="fn">2</div><div class="fl">Bene</div></button>
+        <button class="fbtn" onclick="selFat(this,3)" type="button"><div class="fn">3</div><div class="fl">Discreta</div></button>
+        <button class="fbtn" onclick="selFat(this,4)" type="button"><div class="fn">4</div><div class="fl">Affaticata</div></button>
+        <button class="fbtn" onclick="selFat(this,5)" type="button"><div class="fn">5</div><div class="fl">Stanca</div></button>
+        <button class="fbtn" onclick="selFat(this,6)" type="button"><div class="fn">6</div><div class="fl">Esausta</div></button>
+      </div>
+    </div>
+    <div class="sec-lbl">Sistema SFERA</div>
+    <div class="card">
+      <div class="flabel"><i class="ti ti-arrows-join" style="font-size:14px;color:var(--purple);margin-right:3px"></i>S — Sincronia <span class="req">*</span></div>
+      <div class="fsub">Mente e corpo in un'unica direzione</div>
+      <div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-S"><button class="sbtn" onclick="selS('S',1)" type="button">1</button><button class="sbtn" onclick="selS('S',2)" type="button">2</button><button class="sbtn" onclick="selS('S',3)" type="button">3</button><button class="sbtn" onclick="selS('S',4)" type="button">4</button><button class="sbtn" onclick="selS('S',5)" type="button">5</button></div><span class="slbl r">Alta</span></div>
+    </div>
+    <div class="card">
+      <div class="flabel"><i class="ti ti-bolt" style="font-size:14px;color:var(--purple);margin-right:3px"></i>F — Forza <span class="req">*</span></div>
+      <div class="fsub">Quanto ho messo in campo i miei punti di forza</div>
+      <div class="scale-row"><span class="slbl">Poca</span><div class="sbtns" id="sc-F"><button class="sbtn" onclick="selS('F',1)" type="button">1</button><button class="sbtn" onclick="selS('F',2)" type="button">2</button><button class="sbtn" onclick="selS('F',3)" type="button">3</button><button class="sbtn" onclick="selS('F',4)" type="button">4</button><button class="sbtn" onclick="selS('F',5)" type="button">5</button></div><span class="slbl r">Molta</span></div>
+    </div>
+    <div class="card">
+      <div class="flabel"><i class="ti ti-flame" style="font-size:14px;color:var(--purple);margin-right:3px"></i>E — Energia <span class="req">*</span></div>
+      <div class="fsub">Come hai dosato l'energia (troppa o troppo poca è penalizzante)</div>
+      <div class="scale-row"><span class="slbl">Mal dosata</span><div class="sbtns" id="sc-E"><button class="sbtn" onclick="selS('E',1)" type="button">1</button><button class="sbtn" onclick="selS('E',2)" type="button">2</button><button class="sbtn" onclick="selS('E',3)" type="button">3</button><button class="sbtn" onclick="selS('E',4)" type="button">4</button><button class="sbtn" onclick="selS('E',5)" type="button">5</button></div><span class="slbl r">Ben dosata</span></div>
+    </div>
+    <div class="card">
+      <div class="flabel"><i class="ti ti-activity" style="font-size:14px;color:var(--purple);margin-right:3px"></i>R — Ritmo <span class="req">*</span></div>
+      <div class="fsub">Quanto eravamo a ritmo nelle esecuzioni</div>
+      <div class="scale-row"><span class="slbl">Fuori ritmo</span><div class="sbtns" id="sc-R"><button class="sbtn" onclick="selS('R',1)" type="button">1</button><button class="sbtn" onclick="selS('R',2)" type="button">2</button><button class="sbtn" onclick="selS('R',3)" type="button">3</button><button class="sbtn" onclick="selS('R',4)" type="button">4</button><button class="sbtn" onclick="selS('R',5)" type="button">5</button></div><span class="slbl r">In ritmo</span></div>
+    </div>
+    <div class="card">
+      <div class="flabel"><i class="ti ti-target" style="font-size:14px;color:var(--purple);margin-right:3px"></i>A — Attivazione <span class="req">*</span></div>
+      <div class="fsub">Motivazione a raggiungere lo scopo dell'esercizio</div>
+      <div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-A"><button class="sbtn" onclick="selS('A',1)" type="button">1</button><button class="sbtn" onclick="selS('A',2)" type="button">2</button><button class="sbtn" onclick="selS('A',3)" type="button">3</button><button class="sbtn" onclick="selS('A',4)" type="button">4</button><button class="sbtn" onclick="selS('A',5)" type="button">5</button></div><span class="slbl r">Alta</span></div>
+    </div>
+    <div class="sec-lbl">Focus individuale</div>
+    <div class="card">
+      <div class="flabel">Quanto hai centrato il focus individuale <span class="req">*</span></div>
+      <div class="fsub">L'obiettivo personale prefissato per questa sessione</div>
+      <div class="scale-row"><span class="slbl">Per niente</span><div class="sbtns" id="sc-FI"><button class="sbtn" onclick="selS('FI',1)" type="button">1</button><button class="sbtn" onclick="selS('FI',2)" type="button">2</button><button class="sbtn" onclick="selS('FI',3)" type="button">3</button><button class="sbtn" onclick="selS('FI',4)" type="button">4</button><button class="sbtn" onclick="selS('FI',5)" type="button">5</button></div><span class="slbl r">Pienamente</span></div>
+    </div>
+    <div id="radar-wrap" style="display:none;margin:10px 0">
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px"><i class="ti ti-chart-radar" style="color:var(--purple);margin-right:4px"></i>Tela di ragno SFERA</div>
+        <div style="position:relative;width:100%;height:220px"><canvas id="radar-live"></canvas></div>
+      </div>
+    </div>
+    <div class="sec-lbl">Riflessioni</div>
+    <div class="card">
+      <div class="flabel">Cosa vorresti fare nel prossimo allenamento</div>
+      <textarea id="f-prox" placeholder="Obiettivi, aspetti da migliorare..."></textarea>
+    </div>
+    <div class="card">
+      <div class="flabel">Come posso aiutarti a fare meglio</div>
+      <textarea id="f-aiuto" placeholder="Feedback per lo staff tecnico..."></textarea>
+    </div>
+    <div style="margin-top:1rem">
+      <button class="btn-p" id="submit-btn" onclick="submitForm()"><i class="ti ti-send" style="margin-right:5px"></i>Invia autovalutazione</button>
+      <div class="toast" id="f-toast"><i class="ti ti-check"></i> Scheda inviata con successo!</div>
+      <div class="err" id="f-err"></div>
+    </div>
+  </div>
+
+  <!-- I MIEI DATI -->
+  <div id="vw-mydata" style="display:none">
+    <div id="mydata-loading" class="loading"><div class="spinner"></div> Caricamento dati...</div>
+    <div id="mydata-content" style="display:none">
+      <div class="sec-lbl">Il mio profilo SFERA medio</div>
+      <div class="card"><div style="position:relative;width:100%;height:240px"><canvas id="my-radar"></canvas></div></div>
+      <div class="sec-lbl">Le mie ultime schede</div>
+      <div id="my-history"></div>
+    </div>
+  </div>
+
+  <!-- STAFF -->
+  <div id="vw-staff" style="display:none">
+    <div class="badge badge-staff"><i class="ti ti-shield-check"></i> Vista staff tecnico</div>
+    <div class="sync-bar">
+      <span id="sync-status"><i class="ti ti-cloud" style="margin-right:4px"></i>Pronto</span>
+      <button class="btn-s" onclick="loadAllData()" style="font-size:12px"><i class="ti ti-refresh"></i> Aggiorna</button>
+    </div>
+    <div id="staff-loading" class="loading"><div class="spinner"></div> Caricamento dati squadra...</div>
+    <div id="staff-content" style="display:none">
+      <div class="sec-lbl">Periodo di analisi</div>
+      <div class="card" style="padding:.875rem 1rem">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <select class="period-select" id="period-sel" onchange="onPeriodChange()">
+            <option value="7">Ultima settimana</option>
+            <option value="14">Ultime 2 settimane</option>
+            <option value="30" selected>Ultimo mese</option>
+            <option value="90">Ultimi 3 mesi</option>
+            <option value="0">Tutto lo storico</option>
+          </select>
+          <span style="font-size:12px;color:var(--text2)" id="period-count"></span>
+        </div>
+      </div>
+      <div class="sec-lbl">Panoramica squadra</div>
+      <div class="mg" id="team-metrics"></div>
+      <div class="sec-lbl">Stanchezza squadra per allenamento</div>
+      <div class="card" style="padding:.875rem">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">Stanchezza media per sessione</div>
+        <div style="position:relative;width:100%;height:175px"><canvas id="fat-chart"></canvas></div>
+      </div>
+      <div class="sec-lbl">Media SFERA di squadra</div>
+      <div class="card" style="padding:.875rem">
+        <div style="position:relative;width:100%;height:240px"><canvas id="team-radar"></canvas></div>
+      </div>
+      <div class="sec-lbl">Profilo per atleta</div>
+      <div id="athlete-list"></div>
+      <div id="athlete-detail" style="display:none;margin-top:.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+          <div style="font-size:14px;font-weight:600;color:var(--text)" id="detail-name"></div>
+          <button class="btn-s" style="font-size:12px" onclick="closeDetail()">Chiudi</button>
+        </div>
+        <div class="card" style="padding:.875rem"><div style="position:relative;width:100%;height:220px"><canvas id="detail-radar"></canvas></div></div>
+        <div class="sec-lbl">Storico schede atleta</div>
+        <div id="detail-sessions"></div>
+      </div>
+      <div class="sec-lbl" style="margin-top:1.5rem">Storico completo squadra</div>
+      <div class="card" style="padding:.625rem .875rem"><div id="full-history"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PURPLE='#7F77DD',PBG='rgba(127,119,221,0.15)',TEAL='#1D9E75',TBG='rgba(29,158,117,0.12)';
+const DIMS=['S','F','E','R','A'];
+const SLABELS=['Sincronia','Forza','Energia','Ritmo','Attivazione'];
+
+let curUser=null,allSessions=[],selAthlete=null;
+let liveR=null,myR=null,fatC=null,teamR=null,detR=null;
+const sScores={S:0,F:0,E:0,R:0,A:0,FI:0};
+let fatigue=0;
+
+// ── STORAGE ──────────────────────────────────────────────
+function getGsUrl(){return localStorage.getItem('sfera_gs_url')||''}
+function setGsUrl(u){localStorage.setItem('sfera_gs_url',u)}
+
+// Sessione persistente: salva l'utente loggato nel localStorage
+function saveSession(user){localStorage.setItem('sfera_session',JSON.stringify(user))}
+function loadSession(){try{return JSON.parse(localStorage.getItem('sfera_session'))}catch{return null}}
+function clearSession(){localStorage.removeItem('sfera_session')}
+
+// Cache locale sessioni per backup offline
+function getLocalSessions(){try{return JSON.parse(localStorage.getItem('sfera_sessions')||'[]')}catch{return[]}}
+function saveLocalSessions(s){localStorage.setItem('sfera_sessions',JSON.stringify(s))}
+
+function saveGsUrl(){
+  const v=document.getElementById('gs-url-global').value.trim();
+  if(!v){alert('Inserisci un URL valido.');return}
+  setGsUrl(v);
+  document.getElementById('setup-banner').style.display='none';
+}
+
+function isStaff(u){return u&&u.tipo==='staff'}
+function toggleReg(){const b=document.getElementById('reg-box');b.style.display=b.style.display==='none'?'block':'none'}
+
+// ── API CALLS ─────────────────────────────────────────────
+async function apiCall(params){
+  const url=getGsUrl();
+  if(!url)return null;
+  try{
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(params)
+    });
+    return await r.json();
+  }catch{return null}
+}
+
+// ── AUTH ──────────────────────────────────────────────────
+async function doRegister(){
+  const nome=document.getElementById('r-nome').value.trim();
+  const email=document.getElementById('r-email').value.trim().toLowerCase();
+  const pass=document.getElementById('r-pass').value;
+  const sel=document.getElementById('r-ruolo');
+  const val=sel.value;
+  const err=document.getElementById('r-err');
+  if(!nome||!email||!pass||!val){err.textContent='Compila tutti i campi.';err.style.display='block';return}
+  if(pass.length<6){err.textContent='Password di almeno 6 caratteri.';err.style.display='block';return}
+  if(!getGsUrl()){err.textContent='Configura prima l\'URL Apps Script.';err.style.display='block';return}
+  const[tipo,ruolo]=val.split('|');
+  setBusy('r-btn',true,'Registrazione...');
+  const res=await apiCall({action:'register',nome,email,pass,tipo,ruolo});
+  setBusy('r-btn',false,'Crea account');
+  if(!res){err.textContent='Errore di rete. Controlla la connessione.';err.style.display='block';return}
+  if(!res.ok){err.textContent=res.error||'Errore registrazione.';err.style.display='block';return}
+  err.style.display='none';
+  // login automatico dopo registrazione
+  document.getElementById('l-email').value=email;
+  document.getElementById('l-pass').value=pass;
+  document.getElementById('reg-box').style.display='none';
+  await doLogin();
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim().toLowerCase();
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  if(!email||!pass){err.textContent='Inserisci email e password.';err.style.display='block';return}
+  if(!getGsUrl()){err.textContent='Configura prima l\'URL Apps Script.';err.style.display='block';return}
+  setBusy('l-btn',true,'Accesso...');
+  const res=await apiCall({action:'login',email,pass});
+  setBusy('l-btn',false,'Accedi');
+  if(!res){err.textContent='Errore di rete. Controlla la connessione.';err.style.display='block';return}
+  if(!res.ok){err.textContent='Email o password non corretti.';err.style.display='block';return}
+  err.style.display='none';
+  curUser={email,nome:res.nome,ruolo:res.ruolo,tipo:res.tipo};
+  saveSession(curUser); // ← salva sessione persistente
+  initApp();
+}
+
+function doLogout(){
+  clearSession(); // ← cancella sessione
+  curUser=null;allSessions=[];selAthlete=null;fatigue=0;
+  DIMS.forEach(d=>sScores[d]=0);sScores.FI=0;
+  [liveR,myR,fatC,teamR,detR].forEach(c=>{if(c)c.destroy()});
+  liveR=myR=fatC=teamR=detR=null;
+  document.getElementById('pg-login').classList.add('active');
+  document.getElementById('pg-app').classList.remove('active');
+  document.getElementById('l-email').value='';
+  document.getElementById('l-pass').value='';
+  document.getElementById('l-err').style.display='none';
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+
+function setBusy(id,busy,label){
+  const b=document.getElementById(id);
+  if(!b)return;
+  b.disabled=busy;
+  b.innerHTML=busy?'<div class="spinner" style="display:inline-block;width:14px;height:14px;border-width:2px;vertical-align:middle;margin-right:6px"></div>'+label:label;
+}
+
+// ── APP INIT ──────────────────────────────────────────────
+function initApp(){
+  document.getElementById('pg-login').classList.remove('active');
+  document.getElementById('pg-app').classList.add('active');
+  document.getElementById('u-name').textContent=curUser.nome;
+  const staff=isStaff(curUser);
+  document.getElementById('u-role-lbl').textContent=curUser.ruolo+(staff?' · Staff tecnico':'');
+  const av=document.getElementById('u-av');
+  av.textContent=curUser.nome.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  av.className='av'+(staff?' staff':'');
+  document.getElementById('nav-staff').style.display=staff?'block':'none';
+  document.getElementById('btn-csv').style.display=staff?'inline-flex':'none';
+  document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+  ['vw-form','vw-mydata','vw-staff'].forEach(v=>document.getElementById(v).style.display='none');
+  document.getElementById('vw-form').style.display='block';
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+
+function goNav(btn,target){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['vw-form','vw-mydata','vw-staff'].forEach(v=>document.getElementById(v).style.display='none');
+  document.getElementById(target).style.display='block';
+  if(target==='vw-mydata')loadMyData();
+  if(target==='vw-staff')loadAllData();
+}
+
+// ── DATA ──────────────────────────────────────────────────
+async function fetchSessions(emailFilter){
+  const params={action:'getSessions'};
+  if(emailFilter)params.email=emailFilter;
+  const res=await apiCall(params);
+  return Array.isArray(res)?res:[];
+}
+
+async function loadMyData(){
+  document.getElementById('mydata-loading').style.display='flex';
+  document.getElementById('mydata-content').style.display='none';
+  const sessions=await fetchSessions(curUser.email);
+  document.getElementById('mydata-loading').style.display='none';
+  document.getElementById('mydata-content').style.display='block';
+  drawMyData(sessions);
+}
+
+async function loadAllData(){
+  if(!isStaff(curUser))return;
+  setSyncStatus('Caricamento...');
+  document.getElementById('staff-loading').style.display='flex';
+  document.getElementById('staff-content').style.display='none';
+  const sessions=await fetchSessions(null);
+  if(sessions.length>=0){
+    allSessions=sessions.filter(s=>s.tipo_utente!=='staff');
+    setSyncStatus('Sincronizzato · '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}));
+  } else {
+    allSessions=getLocalSessions().filter(s=>s.tipo_utente!=='staff');
+    setSyncStatus('Offline — dati locali');
+  }
+  document.getElementById('staff-loading').style.display='none';
+  document.getElementById('staff-content').style.display='block';
+  renderStaff();
+}
+
+function setSyncStatus(msg){document.getElementById('sync-status').innerHTML='<i class="ti ti-cloud" style="margin-right:4px"></i>'+msg}
+function filterByPeriod(sessions){
+  const days=parseInt(document.getElementById('period-sel').value);
+  if(days===0)return sessions;
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+  return sessions.filter(s=>new Date(s.data)>=cutoff);
+}
+function onPeriodChange(){if(isStaff(curUser))renderStaff()}
+
+// ── FORM ──────────────────────────────────────────────────
+function selFat(el,val){
+  fatigue=val;
+  document.querySelectorAll('.fbtn').forEach((b,i)=>{b.className='fbtn';if(i<val)b.classList.add('fv'+val)});
+}
+
+function selS(dim,val){
+  sScores[dim]=val;
+  document.querySelectorAll('#sc-'+dim+' .sbtn').forEach((b,i)=>b.classList.toggle('sel',i<val));
+  if(DIMS.filter(d=>sScores[d]>0).length<2)return;
+  document.getElementById('radar-wrap').style.display='block';
+  const data=DIMS.map(d=>sScores[d]||0);
+  if(!liveR){liveR=makeRadar('radar-live',data,PURPLE,PBG,'SFERA');}
+  else{liveR.data.datasets[0].data=data;liveR.update();}
+}
+
+async function submitForm(){
+  const data=document.getElementById('f-data').value;
+  if(!data){alert('Inserisci la data.');return}
+  if(!fatigue){alert('Indica la stanchezza percepita.');return}
+  for(const d of DIMS){if(!sScores[d]){alert('Completa il parametro '+d+' della scala SFERA.');return}}
+  if(!sScores.FI){alert('Indica il focus individuale.');return}
+  const session={email:curUser.email,nome:curUser.nome,ruolo:curUser.ruolo,tipo_utente:curUser.tipo,
+    data,tipo:document.getElementById('f-tipo').value,stanchezza:fatigue,...sScores,
+    prox:document.getElementById('f-prox').value||'',aiuto:document.getElementById('f-aiuto').value||'',
+    ts:Date.now()};
+  // salva locale come backup
+  const loc=getLocalSessions();loc.push(session);saveLocalSessions(loc);
+  const err=document.getElementById('f-err');err.style.display='none';
+  setBusy('submit-btn',true,'Invio in corso...');
+  const res=await apiCall({action:'add',...session});
+  setBusy('submit-btn',false,'<i class="ti ti-send" style="margin-right:5px"></i>Invia autovalutazione');
+  if(!res||!res.ok){err.textContent='Salvato in locale. Verifica la connessione.';err.style.display='block';}
+  showToast('f-toast');
+  resetForm();
+}
+
+function resetForm(){
+  fatigue=0;DIMS.forEach(d=>sScores[d]=0);sScores.FI=0;
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.fbtn').forEach(b=>b.className='fbtn');
+  document.getElementById('f-prox').value='';document.getElementById('f-aiuto').value='';
+  if(liveR){liveR.destroy();liveR=null;}
+  document.getElementById('radar-wrap').style.display='none';
+}
+
+// ── CHARTS ────────────────────────────────────────────────
+function makeRadar(id,data,color,bg,label){
+  const el=document.getElementById(id);if(!el)return null;
+  return new Chart(el,{type:'radar',data:{labels:SLABELS,datasets:[{label,data,backgroundColor:bg,borderColor:color,borderWidth:2,pointBackgroundColor:color,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10}},pointLabels:{font:{size:12}}}}}});
+}
+function avgDims(sessions){
+  return DIMS.map(d=>sessions.length?parseFloat((sessions.reduce((a,s)=>a+(parseFloat(s[d])||0),0)/sessions.length).toFixed(1)):0);
+}
+function drawMyData(sessions){
+  if(myR){myR.destroy();}
+  myR=makeRadar('my-radar',avgDims(sessions),PURPLE,PBG,'Media personale');
+  const hist=document.getElementById('my-history');
+  const last=sessions.slice(-5).reverse();
+  if(!last.length){hist.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda ancora.</p>';return}
+  hist.innerHTML=last.map(s=>sessionCard(s,false)).join('');
+}
+function renderStaff(){
+  const filtered=filterByPeriod(allSessions);
+  document.getElementById('period-count').textContent=filtered.length+' schede nel periodo';
+  const dates=[...new Set(filtered.map(s=>s.data))].length;
+  const athletes=[...new Set(allSessions.map(s=>s.email))].length;
+  const avgFat=filtered.length?parseFloat((filtered.reduce((a,s)=>a+(parseFloat(s.stanchezza)||0),0)/filtered.length).toFixed(1)):0;
+  document.getElementById('team-metrics').innerHTML=
+    `<div class="metric"><div class="ml">Atlete</div><div class="mv">${athletes}</div></div>
+     <div class="metric"><div class="ml">Schede periodo</div><div class="mv">${filtered.length}</div></div>
+     <div class="metric"><div class="ml">Stanch. media</div><div class="mv">${avgFat}/6</div></div>
+     <div class="metric"><div class="ml">Sessioni</div><div class="mv">${dates}</div></div>`;
+  const byDate={};
+  filtered.forEach(s=>{if(!byDate[s.data])byDate[s.data]=[];byDate[s.data].push(parseFloat(s.stanchezza)||0)});
+  const sd=Object.keys(byDate).sort();
+  const fl=sd.map(d=>{const[,m,g]=d.split('-');return g+'/'+m});
+  const fv=sd.map(d=>parseFloat((byDate[d].reduce((a,b)=>a+b,0)/byDate[d].length).toFixed(1)));
+  if(fatC){fatC.destroy();}
+  fatC=new Chart(document.getElementById('fat-chart'),{type:'bar',data:{labels:fl.length?fl:['—'],datasets:[{label:'Stanchezza',data:fv.length?fv:[0],backgroundColor:'rgba(127,119,221,0.4)',borderColor:PURPLE,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:6,ticks:{stepSize:1,font:{size:11}}},x:{ticks:{font:{size:11},autoSkip:true,maxRotation:45}}}}});
+  if(teamR){teamR.destroy();}
+  teamR=makeRadar('team-radar',avgDims(filtered),PURPLE,PBG,'Media squadra');
+  drawAthleteList(filtered);
+  drawFullHistory(filtered);
+}
+
+function drawAthleteList(sessions){
+  const byEmail={};
+  sessions.forEach(s=>{if(!byEmail[s.email])byEmail[s.email]={nome:s.nome,ruolo:s.ruolo,sessions:[]};byEmail[s.email].sessions.push(s)});
+  const el=document.getElementById('athlete-list');
+  if(!Object.keys(byEmail).length){el.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda nel periodo.</p>';return}
+  el.innerHTML=Object.entries(byEmail).map(([email,u])=>{
+    const avg=parseFloat((DIMS.reduce((a,d)=>a+u.sessions.reduce((x,s)=>x+(parseFloat(s[d])||0),0),0)/(DIMS.length*u.sessions.length)).toFixed(1));
+    const lastFat=u.sessions[u.sessions.length-1].stanchezza;
+    const isSel=selAthlete===email;
+    return `<div class="athlete-card ${isSel?'sel':''}" onclick="selectAthlete('${email}','${u.nome.replace(/'/g,"\\'")}')">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="av" style="width:32px;height:32px;font-size:11px">${u.nome.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">${u.nome}</div>
+          <div style="font-size:11px;color:var(--text2)">${u.ruolo} · ${u.sessions.length} schede</div></div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--text2)">
+          <div>SFERA <strong style="color:var(--text)">${avg}</strong>/5</div>
+          <div>Stanch. <strong style="color:var(--text)">${lastFat}</strong>/6</div>
+        </div>
+      </div></div>`;
+  }).join('');
+}
+
+function selectAthlete(email,nome){
+  selAthlete=email;
+  const filtered=filterByPeriod(allSessions);
+  const sessions=filtered.filter(s=>s.email===email);
+  document.getElementById('detail-name').textContent=nome;
+  document.getElementById('athlete-detail').style.display='block';
+  if(detR){detR.destroy();}
+  detR=makeRadar('detail-radar',avgDims(sessions),TEAL,TBG,nome);
+  document.getElementById('detail-sessions').innerHTML=sessions.slice(-8).reverse().map(s=>sessionCard(s,false)).join('')||'<p style="font-size:13px;color:var(--text2)">Nessuna scheda nel periodo.</p>';
+  document.getElementById('athlete-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+  drawAthleteList(filtered);
+}
+
+function closeDetail(){
+  selAthlete=null;
+  document.getElementById('athlete-detail').style.display='none';
+  if(detR){detR.destroy();detR=null;}
+  drawAthleteList(filterByPeriod(allSessions));
+}
+
+function drawFullHistory(sessions){
+  const sorted=sessions.slice().sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,40);
+  const el=document.getElementById('full-history');
+  if(!sorted.length){el.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda nel periodo.</p>';return}
+  el.innerHTML=sorted.map(s=>{
+    const[y,m,g]=s.data.split('-');
+    const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
+    const pills=DIMS.map(d=>`<span class="sfera-pill">${d} ${s[d]}</span>`).join('');
+    return `<div class="hist-row">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+        <div><span style="font-size:13px;font-weight:600;color:var(--text)">${s.nome}</span>
+        <span style="font-size:12px;color:var(--text2);margin-left:6px">${g}/${m}/${y} · ${s.tipo}</span></div>
+        <div style="font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;margin-left:8px">
+          <span>Stanch. <strong style="color:var(--text)">${s.stanchezza}/6</strong></span>
+          <span style="margin-left:7px">SFERA <strong style="color:var(--text)">${avg}/5</strong></span>
+        </div>
+      </div>
+      <div class="sfera-mini">${pills}</div>
+      ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function sessionCard(s){
+  const[y,m,g]=s.data.split('-');
+  const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
+  const pills=DIMS.map(d=>`<span class="sfera-pill">${d} ${s[d]}</span>`).join('');
+  return `<div class="card" style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+      <div><span style="font-size:13px;font-weight:600;color:var(--text)">${g}/${m}/${y}</span>
+        <span style="font-size:12px;color:var(--text2);margin-left:6px">${s.tipo}</span></div>
+      <div style="text-align:right;font-size:12px;color:var(--text2);flex-shrink:0;margin-left:8px">
+        <div>Stanch. <strong style="color:var(--text)">${s.stanchezza}/6</strong></div>
+        <div>SFERA <strong style="color:var(--text)">${avg}/5</strong></div>
+      </div>
+    </div>
+    <div class="sfera-mini">${pills}</div>
+    ${s.prox?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-arrow-right" style="font-size:12px;margin-right:3px"></i>${s.prox}</div>`:''}
+    ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:3px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
+  </div>`;
+}
+
+function exportCSV(){
+  const sessions=allSessions.length?allSessions:getLocalSessions();
+  if(!sessions.length){alert('Nessuna scheda da esportare.');return}
+  const header=['Email','Nome','Ruolo','Data','Tipo','Stanchezza','S','F','E','R','A','Focus','Prossimo','Feedback staff','Timestamp'];
+  const rows=sessions.map(s=>[s.email,s.nome,s.ruolo,s.data,s.tipo,s.stanchezza,s.S,s.F,s.E,s.R,s.A,s.FI,s.prox||'',s.aiuto||'',new Date(s.ts).toLocaleString('it-IT')]);
+  const csv=[header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='sfera_storico.csv';a.click();
+}
+
+function showToast(id){const t=document.getElementById(id);t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
+
+// ── AVVIO: ripristina sessione automaticamente ─────────────
+(function(){
+  const url=getGsUrl();
+  if(url){
+    document.getElementById('setup-banner').style.display='none';
+    document.getElementById('gs-url-global').value=url;
+  }
+  // Prova a ripristinare la sessione salvata
+  const saved=loadSession();
+  if(saved&&url){
+    curUser=saved;
+    // mostra brevemente il messaggio di sessione ripristinata
+    const msg=document.getElementById('session-saved');
+    msg.style.display='block';
+    // poi lancia l'app dopo 800ms
+    setTimeout(()=>{msg.style.display='none';initApp();},800);
+  }
+})();
+</script>
+</body>
+</html>
