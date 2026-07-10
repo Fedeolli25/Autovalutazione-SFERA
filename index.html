@@ -278,7 +278,7 @@ let pendingCallbacks={};
 let callId=0;
 
 // ── STORAGE ──────────────────────────────────────────────
-const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbxBLmTItHqEFRl9bv6U43ssdTQNlxyvZJ_KWX0o8LtPkyeoWr8FA0KpI6URw7hLjqg/exec';
+const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbzCQumyDARoR4uP0KXciJIln7V3OBZ2sYP14lEOy365gVfA1bAxBUtXAGEJE5cqpaZF/exec';
 function getGsUrl(){
   let u=localStorage.getItem('sfera_gs_url')||GS_URL_DEFAULT;
   u=u.trim().replace(/\/exec\/exec$/,'/exec');
