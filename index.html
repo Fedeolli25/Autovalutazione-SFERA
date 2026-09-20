@@ -1,3 +1,6 @@
+
+
+Sfera app · HTML
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -86,7 +89,7 @@ textarea{resize:vertical;min-height:68px}
 </style>
 </head>
 <body>
-
+ 
 <!-- LOGIN -->
 <div id="pg-login" class="page active">
   <div class="header-logo">
@@ -96,14 +99,14 @@ textarea{resize:vertical;min-height:68px}
       <div style="font-size:13px;color:var(--text2)">Autovalutazione allenamento</div>
     </div>
   </div>
-
+ 
   <div class="setup-card" id="setup-banner" style="display:none">
     <h3><i class="ti ti-settings" style="font-size:14px;margin-right:4px"></i>Configurazione Apps Script</h3>
     <p>Inserisci l'URL del tuo Google Apps Script. Serve solo una volta su questo dispositivo.</p>
     <input type="text" id="gs-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;font-size:13px"/>
     <button onclick="saveGsUrl()" class="btn-p" style="font-size:13px">Salva e continua</button>
   </div>
-
+ 
   <div class="card">
     <div class="flabel" style="margin-bottom:7px">Email</div>
     <input type="email" id="l-email" placeholder="nome@esempio.com" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')doLogin()"/>
@@ -115,7 +118,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="btn-s" onclick="toggleReg()" style="font-size:12px">Primo accesso? Registrati</button>
     </div>
   </div>
-
+ 
   <div id="reg-box" style="display:none">
     <div class="sec-lbl">Crea account</div>
     <div class="card">
@@ -140,7 +143,7 @@ textarea{resize:vertical;min-height:68px}
     </div>
   </div>
 </div>
-
+ 
 <!-- APP -->
 <div id="pg-app" class="page">
   <div class="user-bar">
@@ -161,7 +164,7 @@ textarea{resize:vertical;min-height:68px}
     <button class="nav-btn" onclick="goNav(this,'vw-mydata')"><i class="ti ti-user" style="font-size:14px;margin-right:3px"></i>I miei dati</button>
     <button class="nav-btn" id="nav-staff" style="display:none" onclick="goNav(this,'vw-staff')"><i class="ti ti-users" style="font-size:14px;margin-right:3px"></i>Squadra</button>
   </div>
-
+ 
   <!-- SCHEDA -->
   <div id="vw-form">
     <div class="sec-lbl">Dati sessione</div>
@@ -184,6 +187,41 @@ textarea{resize:vertical;min-height:68px}
         <button class="fbtn" onclick="selFat(this,4)" type="button"><div class="fn">4</div><div class="fl">Affaticata</div></button>
         <button class="fbtn" onclick="selFat(this,5)" type="button"><div class="fn">5</div><div class="fl">Stanca</div></button>
         <button class="fbtn" onclick="selFat(this,6)" type="button"><div class="fn">6</div><div class="fl">Esausta</div></button>
+      </div>
+    </div>
+    <div class="sec-lbl">Dolori</div>
+    <div class="card">
+      <div class="flabel">Hai dolori fisici? <span class="req">*</span></div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="button" id="dolore-no" onclick="selDolore(false)"
+          style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--bg2);color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;transition:all .12s">
+          No
+        </button>
+        <button type="button" id="dolore-si" onclick="selDolore(true)"
+          style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--bg2);color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;transition:all .12s">
+          Si
+        </button>
+      </div>
+      <div id="dolore-detail" style="display:none;margin-top:12px">
+        <div class="flabel" style="margin-bottom:6px;margin-top:4px">Dove e quanto? <span class="req">*</span></div>
+        <div class="fsub">Descrivi la zona e indica l intensita del dolore da 1 a 10</div>
+        <input type="text" id="dolore-dove" placeholder="Es. ginocchio sinistro, spalla destra..." style="margin-bottom:10px"/>
+        <div class="scale-row">
+          <span class="slbl">Lieve</span>
+          <div class="sbtns" id="sc-dolore">
+            <button class="sbtn" onclick="selDoloreInt(1)" type="button">1</button>
+            <button class="sbtn" onclick="selDoloreInt(2)" type="button">2</button>
+            <button class="sbtn" onclick="selDoloreInt(3)" type="button">3</button>
+            <button class="sbtn" onclick="selDoloreInt(4)" type="button">4</button>
+            <button class="sbtn" onclick="selDoloreInt(5)" type="button">5</button>
+            <button class="sbtn" onclick="selDoloreInt(6)" type="button">6</button>
+            <button class="sbtn" onclick="selDoloreInt(7)" type="button">7</button>
+            <button class="sbtn" onclick="selDoloreInt(8)" type="button">8</button>
+            <button class="sbtn" onclick="selDoloreInt(9)" type="button">9</button>
+            <button class="sbtn" onclick="selDoloreInt(10)" type="button">10</button>
+          </div>
+          <span class="slbl r">Forte</span>
+        </div>
       </div>
     </div>
     <div class="sec-lbl">Sistema SFERA</div>
@@ -209,7 +247,7 @@ textarea{resize:vertical;min-height:68px}
       <div class="err" id="f-err"></div>
     </div>
   </div>
-
+ 
   <!-- I MIEI DATI -->
   <div id="vw-mydata" style="display:none">
     <div id="mydata-loading" class="loading"><div class="spinner"></div> Caricamento dati...</div>
@@ -220,7 +258,7 @@ textarea{resize:vertical;min-height:68px}
       <div id="my-history"></div>
     </div>
   </div>
-
+ 
   <!-- STAFF -->
   <div id="vw-staff" style="display:none">
     <div class="badge badge-staff"><i class="ti ti-shield-check"></i> Vista staff tecnico</div>
@@ -268,22 +306,24 @@ textarea{resize:vertical;min-height:68px}
     </div>
   </div>
 </div>
-
+ 
 <!-- iframe nascosto per chiamate CORS-free -->
 <iframe id="gs-iframe" name="gs-iframe" style="display:none"></iframe>
-
+ 
 <script>
 const PURPLE='#7F77DD',PBG='rgba(127,119,221,0.15)',TEAL='#1D9E75',TBG='rgba(29,158,117,0.12)';
 const DIMS=['S','F','E','R','A'];
 const SLABELS=['Sincronia','Forza','Energia','Ritmo','Attivazione'];
-
+ 
 let curUser=null,allSessions=[],selAthlete=null;
 let liveR=null,myR=null,fatC=null,teamR=null,detR=null;
 const sScores={S:0,F:0,E:0,R:0,A:0,FI:0};
 let fatigue=0;
+let dolore=null; // null=non risposto, false=no, true=si
+let doloreInt=0;
 let pendingCallbacks={};
 let callId=0;
-
+ 
 // ── STORAGE ──────────────────────────────────────────────
 const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbx1uBp04EutyIPkmk6vvDMOUDJQGTHllUyQmEk9DIJYJbtt4D3cjzMoSba573i9TrNR/exec';
 function getGsUrl(){
@@ -302,14 +342,14 @@ function loadSession(){try{return JSON.parse(localStorage.getItem('sfera_session
 function clearSession(){localStorage.removeItem('sfera_session')}
 function getLocalSessions(){try{return JSON.parse(localStorage.getItem('sfera_sessions')||'[]')}catch{return[]}}
 function saveLocalSessions(s){localStorage.setItem('sfera_sessions',JSON.stringify(s))}
-
+ 
 function saveGsUrl(){
   const v=document.getElementById('gs-url-input').value.trim();
   if(!v||!v.includes('script.google.com')){alert('Inserisci un URL valido di Apps Script.');return}
   setGsUrl(v);
   document.getElementById('setup-banner').style.display='none';
 }
-
+ 
 // ── CHIAMATE JSONP (bypassa CORS) ─────────────────────────
 function apiCall(params){
   return new Promise((resolve)=>{
@@ -335,10 +375,10 @@ function apiCall(params){
     setTimeout(()=>{if(script.parentNode)script.parentNode.removeChild(script)},11000);
   });
 }
-
+ 
 function isStaff(u){return u&&u.tipo==='staff'}
 function toggleReg(){const b=document.getElementById('reg-box');b.style.display=b.style.display==='none'?'block':'none'}
-
+ 
 // ── AUTH ──────────────────────────────────────────────────
 async function doRegister(){
   const nome=document.getElementById('r-nome').value.trim();
@@ -362,7 +402,7 @@ async function doRegister(){
   document.getElementById('reg-box').style.display='none';
   await doLogin();
 }
-
+ 
 async function doLogin(){
   const email=document.getElementById('l-email').value.trim().toLowerCase();
   const pass=document.getElementById('l-pass').value;
@@ -379,7 +419,7 @@ async function doLogin(){
   saveSession(curUser);
   initApp();
 }
-
+ 
 function doLogout(){
   clearSession();
   curUser=null;allSessions=[];selAthlete=null;fatigue=0;
@@ -392,12 +432,12 @@ function doLogout(){
   document.getElementById('l-pass').value='';
   document.getElementById('l-err').style.display='none';
 }
-
+ 
 function setBusy(id,busy,label){
   const b=document.getElementById(id);if(!b)return;
   b.disabled=busy;b.textContent=label;
 }
-
+ 
 // ── APP ───────────────────────────────────────────────────
 function initApp(){
   document.getElementById('pg-login').classList.remove('active');
@@ -415,7 +455,7 @@ function initApp(){
   document.getElementById('vw-form').style.display='block';
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
 }
-
+ 
 function goNav(btn,target){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
@@ -424,7 +464,7 @@ function goNav(btn,target){
   if(target==='vw-mydata')loadMyData();
   if(target==='vw-staff')loadAllData();
 }
-
+ 
 // ── DATA ──────────────────────────────────────────────────
 async function loadMyData(){
   document.getElementById('mydata-loading').style.display='flex';
@@ -435,7 +475,7 @@ async function loadMyData(){
   document.getElementById('mydata-content').style.display='block';
   drawMyData(sessions);
 }
-
+ 
 async function loadAllData(){
   if(!isStaff(curUser))return;
   setSyncStatus('Caricamento...');
@@ -453,14 +493,34 @@ async function loadAllData(){
   document.getElementById('staff-content').style.display='block';
   renderStaff();
 }
-
+ 
 function setSyncStatus(msg){document.getElementById('sync-status').innerHTML='<i class="ti ti-cloud" style="margin-right:4px"></i>'+msg}
 function filterByPeriod(s){const d=parseInt(document.getElementById('period-sel').value);if(d===0)return s;const c=new Date();c.setDate(c.getDate()-d);return s.filter(x=>new Date(x.data)>=c)}
 function onPeriodChange(){if(isStaff(curUser))renderStaff()}
-
+ 
 // ── FORM ──────────────────────────────────────────────────
 function selFat(el,val){fatigue=val;document.querySelectorAll('.fbtn').forEach((b,i)=>{b.className='fbtn';if(i<val)b.classList.add('fv'+val)})}
-
+ 
+function selDolore(val){
+  dolore=val;
+  const btnNo=document.getElementById('dolore-no');
+  const btnSi=document.getElementById('dolore-si');
+  const detail=document.getElementById('dolore-detail');
+  btnNo.style.background=!val?'var(--purple)':'var(--bg2)';
+  btnNo.style.color=!val?'#fff':'var(--text2)';
+  btnNo.style.borderColor=!val?'var(--purple)':'var(--border2)';
+  btnSi.style.background=val?'#e24b4a':'var(--bg2)';
+  btnSi.style.color=val?'#fff':'var(--text2)';
+  btnSi.style.borderColor=val?'#e24b4a':'var(--border2)';
+  detail.style.display=val?'block':'none';
+  if(!val){doloreInt=0;document.getElementById('dolore-dove').value='';document.querySelectorAll('#sc-dolore .sbtn').forEach(b=>b.classList.remove('sel'));}
+}
+ 
+function selDoloreInt(val){
+  doloreInt=val;
+  document.querySelectorAll('#sc-dolore .sbtn').forEach((b,i)=>b.classList.toggle('sel',i<val));
+}
+ 
 function selS(dim,val){
   sScores[dim]=val;
   document.querySelectorAll('#sc-'+dim+' .sbtn').forEach((b,i)=>b.classList.toggle('sel',i<val));
@@ -470,16 +530,21 @@ function selS(dim,val){
   if(!liveR){liveR=makeRadar('radar-live',data,PURPLE,PBG,'SFERA');}
   else{liveR.data.datasets[0].data=data;liveR.update();}
 }
-
+ 
 async function submitForm(){
   const data=document.getElementById('f-data').value;
   if(!data){alert('Inserisci la data.');return}
   if(!fatigue){alert('Indica la stanchezza percepita.');return}
+  if(dolore===null){alert('Indica se hai dolori fisici.');return}
+  if(dolore===true){
+    if(!document.getElementById('dolore-dove').value.trim()){alert('Indica dove senti dolore.');return}
+    if(!doloreInt){alert('Indica l intensita del dolore da 1 a 10.');return}
+  }
   for(const d of DIMS){if(!sScores[d]){alert('Completa il parametro '+d+' SFERA.');return}}
   if(!sScores.FI){alert('Indica il focus individuale.');return}
   const session={email:curUser.email,nome:curUser.nome,ruolo:curUser.ruolo,tipo_utente:curUser.tipo,
     data,tipo:document.getElementById('f-tipo').value,stanchezza:fatigue,...sScores,
-    prox:document.getElementById('f-prox').value||'',aiuto:document.getElementById('f-aiuto').value||'',ts:Date.now()};
+    prox:document.getElementById('f-prox').value||'',aiuto:document.getElementById('f-aiuto').value||'',ts:Date.now(),dolore:dolore?'Si':'No',doloreDove:dolore?(document.getElementById('dolore-dove').value||''):'',doloreInt:dolore?doloreInt:0};
   const loc=getLocalSessions();loc.push(session);saveLocalSessions(loc);
   const err=document.getElementById('f-err');err.style.display='none';
   setBusy('submit-btn',true,'Invio...');
@@ -488,23 +553,28 @@ async function submitForm(){
   if(!res||!res.ok){err.textContent='Salvato in locale. Controlla la connessione.';err.style.display='block';}
   showToast('f-toast');resetForm();
 }
-
+ 
 function resetForm(){
   fatigue=0;DIMS.forEach(d=>sScores[d]=0);sScores.FI=0;
   document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('sel'));
   document.querySelectorAll('.fbtn').forEach(b=>b.className='fbtn');
   document.getElementById('f-prox').value='';document.getElementById('f-aiuto').value='';
+  dolore=null;doloreInt=0;
+  document.getElementById('dolore-no').style.cssText='';document.getElementById('dolore-si').style.cssText='';
+  document.getElementById('dolore-detail').style.display='none';
+  if(document.getElementById('dolore-dove'))document.getElementById('dolore-dove').value='';
+  document.querySelectorAll('#sc-dolore .sbtn').forEach(b=>b.classList.remove('sel'));
   if(liveR){liveR.destroy();liveR=null;}
   document.getElementById('radar-wrap').style.display='none';
 }
-
+ 
 // ── CHARTS ────────────────────────────────────────────────
 function makeRadar(id,data,color,bg,label){
   const el=document.getElementById(id);if(!el)return null;
   return new Chart(el,{type:'radar',data:{labels:SLABELS,datasets:[{label,data,backgroundColor:bg,borderColor:color,borderWidth:2,pointBackgroundColor:color,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10}},pointLabels:{font:{size:12}}}}}});
 }
 function avgDims(s){return DIMS.map(d=>s.length?parseFloat((s.reduce((a,x)=>a+(parseFloat(x[d])||0),0)/s.length).toFixed(1)):0)}
-
+ 
 function drawMyData(sessions){
   if(myR){myR.destroy();}
   myR=makeRadar('my-radar',avgDims(sessions),PURPLE,PBG,'Media personale');
@@ -513,7 +583,7 @@ function drawMyData(sessions){
   if(!last.length){hist.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda ancora.</p>';return}
   hist.innerHTML=last.map(s=>sessionCard(s)).join('');
 }
-
+ 
 function renderStaff(){
   const filtered=filterByPeriod(allSessions);
   document.getElementById('period-count').textContent=filtered.length+' schede nel periodo';
@@ -535,7 +605,7 @@ function renderStaff(){
   teamR=makeRadar('team-radar',avgDims(filtered),PURPLE,PBG,'Media squadra');
   drawAthleteList(filtered);drawFullHistory(filtered);
 }
-
+ 
 function drawAthleteList(sessions){
   const byEmail={};
   sessions.forEach(s=>{if(!byEmail[s.email])byEmail[s.email]={nome:s.nome,ruolo:s.ruolo,sessions:[]};byEmail[s.email].sessions.push(s)});
@@ -558,7 +628,7 @@ function drawAthleteList(sessions){
       </div></div>`;
   }).join('');
 }
-
+ 
 function selectAthlete(email,nome){
   selAthlete=email;
   const sessions=filterByPeriod(allSessions).filter(s=>s.email===email);
@@ -570,13 +640,13 @@ function selectAthlete(email,nome){
   document.getElementById('athlete-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
   drawAthleteList(filterByPeriod(allSessions));
 }
-
+ 
 function closeDetail(){
   selAthlete=null;document.getElementById('athlete-detail').style.display='none';
   if(detR){detR.destroy();detR=null;}
   drawAthleteList(filterByPeriod(allSessions));
 }
-
+ 
 function drawFullHistory(sessions){
   const sorted=sessions.slice().sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,40);
   const el=document.getElementById('full-history');
@@ -599,7 +669,7 @@ function drawFullHistory(sessions){
     </div>`;
   }).join('');
 }
-
+ 
 function sessionCard(s){
   const[y,m,g]=s.data.split('-');
   const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
@@ -618,7 +688,7 @@ function sessionCard(s){
     ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:3px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
   </div>`;
 }
-
+ 
 function exportCSV(){
   const sessions=allSessions.length?allSessions:getLocalSessions();
   if(!sessions.length){alert('Nessuna scheda da esportare.');return}
@@ -627,9 +697,9 @@ function exportCSV(){
   const csv=[header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='sfera_storico.csv';a.click();
 }
-
+ 
 function showToast(id){const t=document.getElementById(id);t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
-
+ 
 // ── AVVIO ─────────────────────────────────────────────────
 (function(){
   const url=getGsUrl();
@@ -641,3 +711,4 @@ function showToast(id){const t=document.getElementById(id);t.style.display='bloc
 </script>
 </body>
 </html>
+ 
