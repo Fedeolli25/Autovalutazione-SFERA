@@ -1,0 +1,21 @@
+{
+  "name": "Sistema SFERA",
+  "short_name": "SFERA",
+  "description": "Autovalutazione allenamento",
+  "start_url": "/Autovalutazione-SFERA/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a4fa8",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
