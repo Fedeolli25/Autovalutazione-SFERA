@@ -323,7 +323,7 @@ let pendingCallbacks={};
 let callId=0;
 
 // ── STORAGE ──────────────────────────────────────────────
-const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbx1uBp04EutyIPkmk6vvDMOUDJQGTHllUyQmEk9DIJYJbtt4D3cjzMoSba573i9TrNR/exec';
+const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbwJjcI1iuAZZ7bT557eesJ6InTmKE-r7Oh8rbxzJmwck6A68p3fIn1WnNU4OzQfwxfc/exec';
 function getGsUrl(){
   let u=localStorage.getItem('sfera_gs_url')||GS_URL_DEFAULT;
   u=u.trim().replace(/\/exec\/exec$/,'/exec');
@@ -663,7 +663,11 @@ function drawFullHistory(sessions){
         </div>
       </div>
       <div class="sfera-mini">${pills}</div>
+      ${s.dolore?`<div style="font-size:12px;margin-top:6px;padding:4px 8px;border-radius:6px;background:${s.dolore==='Si'?'#fcebeb':'#eaf3de'};color:${s.dolore==='Si'?'#a01010':'#3a6a00'}">
+        <i class="ti ${s.dolore==='Si'?'ti-alert-circle':'ti-circle-check'}" style="font-size:12px;margin-right:4px"></i>
+        <strong>Dolori: ${s.dolore}</strong>${s.dolore==='Si'&&s.doloreDove?` — ${s.doloreDove} (intensità ${s.doloreInt}/10)`:''}</div>`:''}
       ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
+      ${s.dolore==='Si'?`<div style="font-size:12px;color:#e24b4a;margin-top:5px;font-weight:500"><i class="ti ti-alert-circle" style="font-size:12px;margin-right:3px"></i>Dolore: ${s.doloreDove||''} — intensità ${s.doloreInt||''}/10</div>`:''}
     </div>`;
   }).join('');
 }
@@ -672,6 +676,8 @@ function sessionCard(s){
   const[y,m,g]=s.data.split('-');
   const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
   const pills=DIMS.map(d=>`<span class="sfera-pill">${d} ${s[d]}</span>`).join('');
+  const doloreColor=s.dolore==='Si'?'#e24b4a':'#639922';
+  const doloreIcon=s.dolore==='Si'?'ti-alert-circle':'ti-circle-check';
   return `<div class="card" style="margin-bottom:8px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
       <div><span style="font-size:13px;font-weight:600;color:var(--text)">${g}/${m}/${y}</span>
@@ -682,16 +688,20 @@ function sessionCard(s){
       </div>
     </div>
     <div class="sfera-mini">${pills}</div>
+    ${s.dolore?`<div style="font-size:12px;margin-top:6px;padding:5px 8px;border-radius:6px;background:${s.dolore==='Si'?'#fcebeb':'#eaf3de'};color:${doloreColor}">
+      <i class="ti ${doloreIcon}" style="font-size:12px;margin-right:4px"></i>
+      <strong>Dolori: ${s.dolore}</strong>${s.dolore==='Si'&&s.doloreDove?` — ${s.doloreDove} (intensità ${s.doloreInt}/10)`:''}</div>`:''}
     ${s.prox?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-arrow-right" style="font-size:12px;margin-right:3px"></i>${s.prox}</div>`:''}
     ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:3px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
+    ${s.dolore==='Si'?`<div style="font-size:12px;color:#e24b4a;margin-top:3px;font-weight:500"><i class="ti ti-alert-circle" style="font-size:12px;margin-right:3px"></i>Dolore: ${s.doloreDove||''} — intensità ${s.doloreInt||''}/10</div>`:''}
   </div>`;
 }
 
 function exportCSV(){
   const sessions=allSessions.length?allSessions:getLocalSessions();
   if(!sessions.length){alert('Nessuna scheda da esportare.');return}
-  const header=['Email','Nome','Ruolo','Data','Tipo','Stanchezza','S','F','E','R','A','Focus','Prossimo','Feedback','Timestamp'];
-  const rows=sessions.map(s=>[s.email,s.nome,s.ruolo,s.data,s.tipo,s.stanchezza,s.S,s.F,s.E,s.R,s.A,s.FI,s.prox||'',s.aiuto||'',new Date(s.ts).toLocaleString('it-IT')]);
+  const header=['Email','Nome','Ruolo','Data','Tipo','Stanchezza','S','F','E','R','A','Focus','Prossimo','Feedback','Dolore','DoloreDove','DoloreInt','Timestamp'];
+  const rows=sessions.map(s=>[s.email,s.nome,s.ruolo,s.data,s.tipo,s.stanchezza,s.S,s.F,s.E,s.R,s.A,s.FI,s.prox||'',s.aiuto||'',s.dolore||'No',s.doloreDove||'',s.doloreInt||0,new Date(s.ts).toLocaleString('it-IT')]);
   const csv=[header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='sfera_storico.csv';a.click();
 }
