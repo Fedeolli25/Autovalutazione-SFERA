@@ -114,12 +114,12 @@ textarea{resize:vertical;min-height:68px}
     <div class="err" id="l-err"></div>
     <button class="btn-p" style="margin-top:14px" id="l-btn" onclick="doLogin()">Accedi</button>
     <div style="text-align:center;margin-top:10px">
-      <button class="btn-s" onclick="toggleReg()" style="font-size:12px">Primo accesso? Registrati</button>
+      <button class="btn-s" onclick="toggleReg()" style="font-size:12px">Primo accesso? Richiedi accesso</button>
     </div>
   </div>
 
   <div id="reg-box" style="display:none">
-    <div class="sec-lbl">Crea account</div>
+    <div class="sec-lbl">Richiedi accesso</div>
     <div class="card">
       <div class="flabel" style="margin-bottom:7px">Nome e cognome</div>
       <input type="text" id="r-nome" placeholder="Es. Giulia Rossi" style="margin-bottom:11px"/>
@@ -138,7 +138,7 @@ textarea{resize:vertical;min-height:68px}
       <div class="flabel" style="margin-bottom:7px">Password</div>
       <input type="password" id="r-pass" placeholder="min. 6 caratteri"/>
       <div class="err" id="r-err"></div>
-      <button class="btn-p" style="margin-top:14px" id="r-btn" onclick="doRegister()">Crea account</button>
+      <button class="btn-p" style="margin-top:14px" id="r-btn" onclick="doRegister()">Richiedi accesso</button>
     </div>
   </div>
 </div>
@@ -392,14 +392,16 @@ async function doRegister(){
   const[tipo,ruolo]=val.split('|');
   setBusy('r-btn',true,'Registrazione...');
   const res=await apiCall({action:'register',nome,email,pass,tipo,ruolo});
-  setBusy('r-btn',false,'Crea account');
+  setBusy('r-btn',false,'Richiedi accesso');
   if(!res){err.textContent='Errore di connessione. Controlla l\'URL Apps Script.';err.style.display='block';return}
   if(!res.ok){err.textContent=res.error||'Errore registrazione.';err.style.display='block';return}
   err.style.display='none';
-  document.getElementById('l-email').value=email;
-  document.getElementById('l-pass').value=pass;
   document.getElementById('reg-box').style.display='none';
-  await doLogin();
+  document.getElementById('r-nome').value='';document.getElementById('r-email').value='';document.getElementById('r-pass').value='';
+  document.getElementById('l-email').value=email;
+  const le=document.getElementById('l-err');
+  le.textContent='✅ Richiesta di accesso inviata! Potrai accedere appena verrà approvata. Riprova più tardi con le stesse credenziali.';
+  le.style.display='block';le.style.color='#1a7a3c';
 }
 
 async function doLogin(){
@@ -412,7 +414,10 @@ async function doLogin(){
   const res=await apiCall({action:'login',email,pass});
   setBusy('l-btn',false,'Accedi');
   if(!res){err.textContent='Errore di connessione. Controlla l\'URL Apps Script.';err.style.display='block';return}
-  if(!res.ok){err.textContent='Email o password non corretti.';err.style.display='block';return}
+  err.style.color='';
+  if(!res.ok){
+    err.textContent=res.pending?'⏳ La tua richiesta è in attesa di approvazione. Riprova più tardi.':res.rejected?'Richiesta di accesso non approvata.':'Email o password non corretti.';
+    err.style.display='block';return}
   err.style.display='none';
   curUser={email,nome:res.nome,ruolo:res.ruolo,tipo:res.tipo};
   saveSession(curUser);
@@ -667,8 +672,9 @@ function drawFullHistory(sessions){
       ${s.dolore?`<div style="font-size:12px;margin-top:6px;padding:4px 8px;border-radius:6px;background:${s.dolore==='Si'?'#fcebeb':'#eaf3de'};color:${s.dolore==='Si'?'#a01010':'#3a6a00'}">
         <i class="ti ${s.dolore==='Si'?'ti-alert-circle':'ti-circle-check'}" style="font-size:12px;margin-right:4px"></i>
         <strong>Dolori: ${s.dolore}</strong>${s.dolore==='Si'&&s.doloreDove?` — ${s.doloreDove} (intensità ${s.doloreInt}/10)`:''}</div>`:''}
-      ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
-      ${s.dolore==='Si'?`<div style="font-size:12px;color:#e24b4a;margin-top:5px;font-weight:500"><i class="ti ti-alert-circle" style="font-size:12px;margin-right:3px"></i>Dolore: ${s.doloreDove||''} — intensità ${s.doloreInt||''}/10</div>`:''}
+      ${s.prox?`<div style="font-size:12px;color:var(--text2);margin-top:5px"><i class="ti ti-arrow-right" style="font-size:12px;margin-right:3px"></i>${s.prox}</div>`:''}
+      ${s.aiuto?`<div style="font-size:12px;color:var(--text2);margin-top:3px"><i class="ti ti-message" style="font-size:12px;margin-right:3px"></i>${s.aiuto}</div>`:''}
+      ${s.dolore==='Si'?`<div style="font-size:12px;color:#e24b4a;margin-top:3px;font-weight:500"><i class="ti ti-alert-circle" style="font-size:12px;margin-right:3px"></i>Dolore: ${s.doloreDove||''} — intensità ${s.doloreInt||''}/10</div>`:''}
     </div>`;
   }).join('');
 }
