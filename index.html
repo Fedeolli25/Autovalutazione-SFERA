@@ -124,7 +124,7 @@ textarea{resize:vertical;min-height:68px}
       <div class="flabel" style="margin-bottom:7px">Nome e cognome</div>
       <input type="text" id="r-nome" placeholder="Es. Giulia Rossi" style="margin-bottom:11px"/>
       <div class="flabel" style="margin-bottom:7px">Ruolo</div>
-      <select id="r-ruolo" style="margin-bottom:11px">
+      <select id="r-ruolo" style="margin-bottom:11px" onchange="onRuoloChange()">
         <option value="">Seleziona ruolo</option>
         <option value="atleta|Palleggiatrice">Palleggiatrice</option>
         <option value="atleta|Opposta">Opposta</option>
@@ -133,6 +133,11 @@ textarea{resize:vertical;min-height:68px}
         <option value="atleta|Libero">Libero</option>
         <option value="staff|Staff tecnico">Staff tecnico</option>
       </select>
+      <div id="r-squadra-wrap" style="display:none;margin-bottom:11px">
+        <div class="flabel" style="margin-bottom:7px" id="r-squadra-lbl">Squadra</div>
+        <select id="r-squadra-sel" style="display:none"></select>
+        <div id="r-squadra-chk" style="display:none"></div>
+      </div>
       <div class="flabel" style="margin-bottom:7px">Email</div>
       <input type="email" id="r-email" placeholder="nome@esempio.com" style="margin-bottom:11px"/>
       <div class="flabel" style="margin-bottom:7px">Password</div>
@@ -166,6 +171,13 @@ textarea{resize:vertical;min-height:68px}
 
   <!-- SCHEDA -->
   <div id="vw-form">
+    <div id="f-squadra-wrap">
+      <div class="sec-lbl">Squadra</div>
+      <div class="card">
+        <div class="flabel" style="margin-bottom:6px">In quale squadra ti alleni? <span class="req">*</span></div>
+        <select id="f-squadra"></select>
+      </div>
+    </div>
     <div class="sec-lbl">Dati sessione</div>
     <div class="card">
       <div class="flabel" style="margin-bottom:6px">Data allenamento <span class="req">*</span></div>
@@ -224,13 +236,13 @@ textarea{resize:vertical;min-height:68px}
       </div>
     </div>
     <div class="sec-lbl">Sistema SFERA</div>
-    <div class="card"><div class="flabel"><i class="ti ti-arrows-join" style="font-size:14px;color:var(--purple);margin-right:3px"></i>S — Sincronia <span class="req">*</span></div><div class="fsub">Mente e corpo in un'unica direzione</div><div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-S"><button class="sbtn" onclick="selS('S',1)" type="button">1</button><button class="sbtn" onclick="selS('S',2)" type="button">2</button><button class="sbtn" onclick="selS('S',3)" type="button">3</button><button class="sbtn" onclick="selS('S',4)" type="button">4</button><button class="sbtn" onclick="selS('S',5)" type="button">5</button></div><span class="slbl r">Alta</span></div></div>
-    <div class="card"><div class="flabel"><i class="ti ti-bolt" style="font-size:14px;color:var(--purple);margin-right:3px"></i>F — Forza <span class="req">*</span></div><div class="fsub">Quanto ho messo in campo i miei punti di forza</div><div class="scale-row"><span class="slbl">Poca</span><div class="sbtns" id="sc-F"><button class="sbtn" onclick="selS('F',1)" type="button">1</button><button class="sbtn" onclick="selS('F',2)" type="button">2</button><button class="sbtn" onclick="selS('F',3)" type="button">3</button><button class="sbtn" onclick="selS('F',4)" type="button">4</button><button class="sbtn" onclick="selS('F',5)" type="button">5</button></div><span class="slbl r">Molta</span></div></div>
-    <div class="card"><div class="flabel"><i class="ti ti-flame" style="font-size:14px;color:var(--purple);margin-right:3px"></i>E — Energia <span class="req">*</span></div><div class="fsub">Come hai dosato l'energia (troppa o troppo poca è penalizzante)</div><div class="scale-row"><span class="slbl">Mal dosata</span><div class="sbtns" id="sc-E"><button class="sbtn" onclick="selS('E',1)" type="button">1</button><button class="sbtn" onclick="selS('E',2)" type="button">2</button><button class="sbtn" onclick="selS('E',3)" type="button">3</button><button class="sbtn" onclick="selS('E',4)" type="button">4</button><button class="sbtn" onclick="selS('E',5)" type="button">5</button></div><span class="slbl r">Ben dosata</span></div></div>
-    <div class="card"><div class="flabel"><i class="ti ti-activity" style="font-size:14px;color:var(--purple);margin-right:3px"></i>R — Ritmo <span class="req">*</span></div><div class="fsub">Quanto eravamo a ritmo nelle esecuzioni</div><div class="scale-row"><span class="slbl">Fuori ritmo</span><div class="sbtns" id="sc-R"><button class="sbtn" onclick="selS('R',1)" type="button">1</button><button class="sbtn" onclick="selS('R',2)" type="button">2</button><button class="sbtn" onclick="selS('R',3)" type="button">3</button><button class="sbtn" onclick="selS('R',4)" type="button">4</button><button class="sbtn" onclick="selS('R',5)" type="button">5</button></div><span class="slbl r">In ritmo</span></div></div>
-    <div class="card"><div class="flabel"><i class="ti ti-target" style="font-size:14px;color:var(--purple);margin-right:3px"></i>A — Attivazione <span class="req">*</span></div><div class="fsub">Motivazione a raggiungere lo scopo dell'esercizio</div><div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-A"><button class="sbtn" onclick="selS('A',1)" type="button">1</button><button class="sbtn" onclick="selS('A',2)" type="button">2</button><button class="sbtn" onclick="selS('A',3)" type="button">3</button><button class="sbtn" onclick="selS('A',4)" type="button">4</button><button class="sbtn" onclick="selS('A',5)" type="button">5</button></div><span class="slbl r">Alta</span></div></div>
+    <div class="card"><div class="flabel"><i class="ti ti-arrows-join" style="font-size:14px;color:var(--purple);margin-right:3px"></i>S — Sincronia <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">Mente e corpo in un'unica direzione</div><div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-S"><button class="sbtn" onclick="selS('S',1)" type="button">1</button><button class="sbtn" onclick="selS('S',2)" type="button">2</button><button class="sbtn" onclick="selS('S',3)" type="button">3</button><button class="sbtn" onclick="selS('S',4)" type="button">4</button><button class="sbtn" onclick="selS('S',5)" type="button">5</button></div><span class="slbl r">Alta</span></div></div>
+    <div class="card"><div class="flabel"><i class="ti ti-bolt" style="font-size:14px;color:var(--purple);margin-right:3px"></i>F — Forza <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">Quanto ho messo in campo i miei punti di forza</div><div class="scale-row"><span class="slbl">Poca</span><div class="sbtns" id="sc-F"><button class="sbtn" onclick="selS('F',1)" type="button">1</button><button class="sbtn" onclick="selS('F',2)" type="button">2</button><button class="sbtn" onclick="selS('F',3)" type="button">3</button><button class="sbtn" onclick="selS('F',4)" type="button">4</button><button class="sbtn" onclick="selS('F',5)" type="button">5</button></div><span class="slbl r">Molta</span></div></div>
+    <div class="card"><div class="flabel"><i class="ti ti-flame" style="font-size:14px;color:var(--purple);margin-right:3px"></i>E — Energia <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">Come hai dosato l'energia (troppa o troppo poca è penalizzante)</div><div class="scale-row"><span class="slbl">Mal dosata</span><div class="sbtns" id="sc-E"><button class="sbtn" onclick="selS('E',1)" type="button">1</button><button class="sbtn" onclick="selS('E',2)" type="button">2</button><button class="sbtn" onclick="selS('E',3)" type="button">3</button><button class="sbtn" onclick="selS('E',4)" type="button">4</button><button class="sbtn" onclick="selS('E',5)" type="button">5</button></div><span class="slbl r">Ben dosata</span></div></div>
+    <div class="card"><div class="flabel"><i class="ti ti-activity" style="font-size:14px;color:var(--purple);margin-right:3px"></i>R — Ritmo <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">Quanto eravamo a ritmo nelle esecuzioni</div><div class="scale-row"><span class="slbl">Fuori ritmo</span><div class="sbtns" id="sc-R"><button class="sbtn" onclick="selS('R',1)" type="button">1</button><button class="sbtn" onclick="selS('R',2)" type="button">2</button><button class="sbtn" onclick="selS('R',3)" type="button">3</button><button class="sbtn" onclick="selS('R',4)" type="button">4</button><button class="sbtn" onclick="selS('R',5)" type="button">5</button></div><span class="slbl r">In ritmo</span></div></div>
+    <div class="card"><div class="flabel"><i class="ti ti-target" style="font-size:14px;color:var(--purple);margin-right:3px"></i>A — Attivazione <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">Motivazione a raggiungere lo scopo dell'esercizio</div><div class="scale-row"><span class="slbl">Bassa</span><div class="sbtns" id="sc-A"><button class="sbtn" onclick="selS('A',1)" type="button">1</button><button class="sbtn" onclick="selS('A',2)" type="button">2</button><button class="sbtn" onclick="selS('A',3)" type="button">3</button><button class="sbtn" onclick="selS('A',4)" type="button">4</button><button class="sbtn" onclick="selS('A',5)" type="button">5</button></div><span class="slbl r">Alta</span></div></div>
     <div class="sec-lbl">Focus individuale</div>
-    <div class="card"><div class="flabel">Quanto hai centrato il focus individuale <span class="req">*</span></div><div class="fsub">L'obiettivo personale prefissato per questa sessione</div><div class="scale-row"><span class="slbl">Per niente</span><div class="sbtns" id="sc-FI"><button class="sbtn" onclick="selS('FI',1)" type="button">1</button><button class="sbtn" onclick="selS('FI',2)" type="button">2</button><button class="sbtn" onclick="selS('FI',3)" type="button">3</button><button class="sbtn" onclick="selS('FI',4)" type="button">4</button><button class="sbtn" onclick="selS('FI',5)" type="button">5</button></div><span class="slbl r">Pienamente</span></div></div>
+    <div class="card"><div class="flabel">Quanto hai centrato il focus individuale <span style="font-size:11px;color:var(--text2);font-weight:400">(facoltativo)</span></div><div class="fsub">L'obiettivo personale prefissato per questa sessione</div><div class="scale-row"><span class="slbl">Per niente</span><div class="sbtns" id="sc-FI"><button class="sbtn" onclick="selS('FI',1)" type="button">1</button><button class="sbtn" onclick="selS('FI',2)" type="button">2</button><button class="sbtn" onclick="selS('FI',3)" type="button">3</button><button class="sbtn" onclick="selS('FI',4)" type="button">4</button><button class="sbtn" onclick="selS('FI',5)" type="button">5</button></div><span class="slbl r">Pienamente</span></div></div>
     <div id="radar-wrap" style="display:none;margin:10px 0">
       <div class="card">
         <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px"><i class="ti ti-chart-radar" style="color:var(--purple);margin-right:4px"></i>Tela di ragno SFERA</div>
@@ -264,6 +276,12 @@ textarea{resize:vertical;min-height:68px}
     <div class="sync-bar">
       <span id="sync-status"><i class="ti ti-cloud" style="margin-right:4px"></i>Pronto</span>
       <button class="btn-s" onclick="loadAllData()" style="font-size:12px"><i class="ti ti-refresh"></i> Aggiorna</button>
+    </div>
+    <div class="sec-lbl">Squadre che visualizzi</div>
+    <div class="card" style="padding:.875rem 1rem">
+      <div id="staff-squadre-box"></div>
+      <button class="btn-s" onclick="saveStaffSquadre()" style="font-size:12px;margin-top:10px">Salva squadre</button>
+      <div class="err" id="staff-sq-err"></div>
     </div>
     <div id="staff-loading" class="loading"><div class="spinner"></div> Caricamento dati squadra...</div>
     <div id="staff-content" style="display:none">
@@ -312,6 +330,10 @@ textarea{resize:vertical;min-height:68px}
 <script>
 const PURPLE='#7F77DD',PBG='rgba(127,119,221,0.15)',TEAL='#1D9E75',TBG='rgba(29,158,117,0.12)';
 const DIMS=['S','F','E','R','A'];
+const SQUADRE=['Under 15','Under 17','Serie D'];
+function squadreList(str){return String(str||'').split(',').map(x=>x.trim()).filter(Boolean)}
+function avgOf(s){const v=DIMS.map(d=>parseFloat(s[d])||0).filter(x=>x>0);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'–'}
+function pillsOf(s){return DIMS.map(d=>`<span class="sfera-pill">${d} ${parseFloat(s[d])>0?s[d]:'–'}</span>`).join('')}
 const SLABELS=['Sincronia','Forza','Energia','Ritmo','Attivazione'];
 
 let curUser=null,allSessions=[],selAthlete=null;
@@ -324,7 +346,7 @@ let pendingCallbacks={};
 let callId=0;
 
 // ── STORAGE ──────────────────────────────────────────────
-const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbyDkbGUotDFSyvDBTmdZqBIzCq5vYCaGTOmQpZI3xjfQUxdTihOq6NSEt7aFKFm2Sij/exec';
+const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbzS7Vi774JrnT8pvcuy7EGb9iXQGz676p3foL08untivW0TuWfTe7bj_08v-ueIzrwD/exec';
 function getGsUrl(){
   let u=localStorage.getItem('sfera_gs_url')||GS_URL_DEFAULT;
   u=u.trim().replace(/\/exec\/exec$/,'/exec');
@@ -376,6 +398,19 @@ function apiCall(params){
 }
 
 function isStaff(u){return u&&u.tipo==='staff'}
+function onRuoloChange(){
+  const val=document.getElementById('r-ruolo').value;
+  const wrap=document.getElementById('r-squadra-wrap');
+  const sel=document.getElementById('r-squadra-sel'),chk=document.getElementById('r-squadra-chk');
+  if(!val){wrap.style.display='none';return}
+  const staff=val.split('|')[0]==='staff';
+  wrap.style.display='block';
+  document.getElementById('r-squadra-lbl').textContent=staff?'Squadre che vuoi visualizzare (anche più di una)':'La tua squadra';
+  sel.style.display=staff?'none':'block';chk.style.display=staff?'block':'none';
+  sel.innerHTML='<option value="">Seleziona squadra</option>'+SQUADRE.map(q=>`<option>${q}</option>`).join('');
+  chk.innerHTML=SQUADRE.map(q=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px"><input type="checkbox" class="r-sq" value="${q}" style="width:auto;margin:0"/>${q}</label>`).join('');
+}
+function squadreChecked(cls){return [...document.querySelectorAll('input.'+cls+':checked')].map(x=>x.value)}
 function toggleReg(){const b=document.getElementById('reg-box');b.style.display=b.style.display==='none'?'block':'none'}
 
 // ── AUTH ──────────────────────────────────────────────────
@@ -390,8 +425,10 @@ async function doRegister(){
   if(pass.length<6){err.textContent='Password di almeno 6 caratteri.';err.style.display='block';return}
   if(!getGsUrl()){err.textContent='Configura prima l\'URL Apps Script.';err.style.display='block';return}
   const[tipo,ruolo]=val.split('|');
+  const sq=tipo==='staff'?squadreChecked('r-sq'):[document.getElementById('r-squadra-sel').value].filter(Boolean);
+  if(!sq.length){err.textContent=tipo==='staff'?'Scegli almeno una squadra.':'Scegli la tua squadra.';err.style.display='block';return}
   setBusy('r-btn',true,'Registrazione...');
-  const res=await apiCall({action:'register',nome,email,pass,tipo,ruolo});
+  const res=await apiCall({action:'register',nome,email,pass,tipo,ruolo,squadre:sq.join(', ')});
   setBusy('r-btn',false,'Richiedi accesso');
   if(!res){err.textContent='Errore di connessione. Controlla l\'URL Apps Script.';err.style.display='block';return}
   if(!res.ok){err.textContent=res.error||'Errore registrazione.';err.style.display='block';return}
@@ -419,7 +456,7 @@ async function doLogin(){
     err.textContent=res.pending?'⏳ La tua richiesta è in attesa di approvazione. Riprova più tardi.':res.rejected?'Richiesta di accesso non approvata.':'Email o password non corretti.';
     err.style.display='block';return}
   err.style.display='none';
-  curUser={email,nome:res.nome,ruolo:res.ruolo,tipo:res.tipo};
+  curUser={email,nome:res.nome,ruolo:res.ruolo,tipo:res.tipo,squadre:res.squadre||''};
   saveSession(curUser);
   initApp();
 }
@@ -454,6 +491,9 @@ function initApp(){
   av.className='av'+(staff?' staff':'');
   document.getElementById('nav-staff').style.display=staff?'block':'none';
   document.getElementById('btn-csv').style.display=staff?'inline-flex':'none';
+  document.getElementById('f-squadra-wrap').style.display=staff?'none':'block';
+  document.getElementById('f-squadra').innerHTML='<option value="">Seleziona squadra</option>'+SQUADRE.map(q=>`<option${q===curUser.squadre?' selected':''}>${q}</option>`).join('');
+  if(staff)renderStaffSquadre();
   document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
   ['vw-form','vw-mydata','vw-staff'].forEach(v=>document.getElementById(v).style.display='none');
   document.getElementById('vw-form').style.display='block';
@@ -485,12 +525,16 @@ async function loadAllData(){
   setSyncStatus('Caricamento...');
   document.getElementById('staff-loading').style.display='flex';
   document.getElementById('staff-content').style.display='none';
-  const res=await apiCall({action:'getSessions'});
+  if(!squadreList(curUser.squadre).length){
+    document.getElementById('staff-loading').style.display='none';
+    document.getElementById('staff-content').style.display='none';
+    setSyncStatus('Scegli almeno una squadra');return}
+  const res=await apiCall({action:'getSessions',staff:curUser.email});
   if(Array.isArray(res)){
     allSessions=res.filter(s=>s.tipo_utente!=='staff');
     setSyncStatus('Sincronizzato · '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}));
   } else {
-    allSessions=getLocalSessions().filter(s=>s.tipo_utente!=='staff');
+    allSessions=getLocalSessions().filter(s=>s.tipo_utente!=='staff'&&squadreList(curUser.squadre).includes(s.squadra));
     setSyncStatus('Offline — dati locali');
   }
   document.getElementById('staff-loading').style.display='none';
@@ -498,6 +542,18 @@ async function loadAllData(){
   renderStaff();
 }
 
+function renderStaffSquadre(){
+  const mine=squadreList(curUser.squadre);
+  document.getElementById('staff-squadre-box').innerHTML=SQUADRE.map(q=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px"><input type="checkbox" class="st-sq" value="${q}" ${mine.includes(q)?'checked':''} style="width:auto;margin:0"/>${q}</label>`).join('');
+}
+async function saveStaffSquadre(){
+  const sel=squadreChecked('st-sq');const err=document.getElementById('staff-sq-err');
+  if(!sel.length){err.textContent='Scegli almeno una squadra.';err.style.display='block';return}
+  err.style.display='none';
+  const res=await apiCall({action:'setSquadre',email:curUser.email,squadre:sel.join(', ')});
+  if(!res||!res.ok){err.textContent='Errore di salvataggio. Riprova.';err.style.display='block';return}
+  curUser.squadre=res.squadre;saveSession(curUser);loadAllData();
+}
 function setSyncStatus(msg){document.getElementById('sync-status').innerHTML='<i class="ti ti-cloud" style="margin-right:4px"></i>'+msg}
 function filterByPeriod(s){const d=parseInt(document.getElementById('period-sel').value);if(d===0)return s;const c=new Date();c.setDate(c.getDate()-d);return s.filter(x=>new Date(x.data)>=c)}
 function onPeriodChange(){if(isStaff(curUser))renderStaff()}
@@ -544,16 +600,20 @@ async function submitForm(){
     if(!document.getElementById('dolore-dove').value.trim()){alert('Indica dove senti dolore.');return}
     if(!doloreInt){alert('Indica l intensita del dolore da 1 a 10.');return}
   }
-  for(const d of DIMS){if(!sScores[d]){alert('Completa il parametro '+d+' SFERA.');return}}
-  if(!sScores.FI){alert('Indica il focus individuale.');return}
+  let squadra='';
+  if(!isStaff(curUser)){
+    squadra=document.getElementById('f-squadra').value;
+    if(!squadra){alert('Scegli la tua squadra.');return}
+  }
   const session={email:curUser.email,nome:curUser.nome,ruolo:curUser.ruolo,tipo_utente:curUser.tipo,
     data,tipo:document.getElementById('f-tipo').value,stanchezza:fatigue,...sScores,
-    prox:document.getElementById('f-prox').value||'',aiuto:document.getElementById('f-aiuto').value||'',ts:Date.now(),dolore:dolore?'Si':'No',doloreDove:dolore?(document.getElementById('dolore-dove').value||''):'',doloreInt:dolore?doloreInt:0};
+    prox:document.getElementById('f-prox').value||'',aiuto:document.getElementById('f-aiuto').value||'',squadra,ts:Date.now(),dolore:dolore?'Si':'No',doloreDove:dolore?(document.getElementById('dolore-dove').value||''):'',doloreInt:dolore?doloreInt:0};
   const loc=getLocalSessions();loc.push(session);saveLocalSessions(loc);
   const err=document.getElementById('f-err');err.style.display='none';
   setBusy('submit-btn',true,'Invio...');
   const res=await apiCall({action:'add',...session});
   setBusy('submit-btn',false,'Invia autovalutazione');
+  if(res&&res.ok&&squadra&&curUser.squadre!==squadra){curUser.squadre=squadra;saveSession(curUser)}
   if(!res||!res.ok){err.textContent='Salvato in locale. Controlla la connessione.';err.style.display='block';}
   showToast('f-toast');resetForm();
 }
@@ -577,7 +637,7 @@ function makeRadar(id,data,color,bg,label){
   const el=document.getElementById(id);if(!el)return null;
   return new Chart(el,{type:'radar',data:{labels:SLABELS,datasets:[{label,data,backgroundColor:bg,borderColor:color,borderWidth:2,pointBackgroundColor:color,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10}},pointLabels:{font:{size:12}}}}}});
 }
-function avgDims(s){return DIMS.map(d=>s.length?parseFloat((s.reduce((a,x)=>a+(parseFloat(x[d])||0),0)/s.length).toFixed(1)):0)}
+function avgDims(s){return DIMS.map(d=>{const v=s.map(x=>parseFloat(x[d])||0).filter(n=>n>0);return v.length?parseFloat((v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)):0})}
 
 function drawMyData(sessions){
   if(myR){myR.destroy();}
@@ -616,7 +676,7 @@ function drawAthleteList(sessions){
   const el=document.getElementById('athlete-list');
   if(!Object.keys(byEmail).length){el.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda nel periodo.</p>';return}
   el.innerHTML=Object.entries(byEmail).map(([email,u])=>{
-    const avg=parseFloat((DIMS.reduce((a,d)=>a+u.sessions.reduce((x,s)=>x+(parseFloat(s[d])||0),0),0)/(DIMS.length*u.sessions.length)).toFixed(1));
+    const avgv=avgDims(u.sessions).filter(n=>n>0);const avg=avgv.length?(avgv.reduce((a,b)=>a+b,0)/avgv.length).toFixed(1):'–';
     const lastFat=u.sessions[u.sessions.length-1].stanchezza;
     return `<div class="athlete-card ${selAthlete===email?'sel':''}" onclick="selectAthlete('${email}','${u.nome.replace(/'/g,"\\'")}')">
       <div style="display:flex;align-items:center;justify-content:space-between">
@@ -657,8 +717,8 @@ function drawFullHistory(sessions){
   if(!sorted.length){el.innerHTML='<p style="font-size:13px;color:var(--text2);padding:.5rem 0">Nessuna scheda nel periodo.</p>';return}
   el.innerHTML=sorted.map(s=>{
     const[y,m,g]=s.data.split('-');
-    const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
-    const pills=DIMS.map(d=>`<span class="sfera-pill">${d} ${s[d]}</span>`).join('');
+    const avg=avgOf(s);
+    const pills=pillsOf(s);
     return `<div class="hist-row">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
         <div><span style="font-size:13px;font-weight:600;color:var(--text)">${s.nome}</span>
@@ -681,8 +741,8 @@ function drawFullHistory(sessions){
 
 function sessionCard(s){
   const[y,m,g]=s.data.split('-');
-  const avg=(DIMS.reduce((a,d)=>a+(parseFloat(s[d])||0),0)/DIMS.length).toFixed(1);
-  const pills=DIMS.map(d=>`<span class="sfera-pill">${d} ${s[d]}</span>`).join('');
+  const avg=avgOf(s);
+  const pills=pillsOf(s);
   const doloreColor=s.dolore==='Si'?'#e24b4a':'#639922';
   const doloreIcon=s.dolore==='Si'?'ti-alert-circle':'ti-circle-check';
   return `<div class="card" style="margin-bottom:8px">
@@ -707,8 +767,8 @@ function sessionCard(s){
 function exportCSV(){
   const sessions=allSessions.length?allSessions:getLocalSessions();
   if(!sessions.length){alert('Nessuna scheda da esportare.');return}
-  const header=['Email','Nome','Ruolo','Data','Tipo','Stanchezza','S','F','E','R','A','Focus','Prossimo','Feedback','Dolore','DoloreDove','DoloreInt','Timestamp'];
-  const rows=sessions.map(s=>[s.email,s.nome,s.ruolo,s.data,s.tipo,s.stanchezza,s.S,s.F,s.E,s.R,s.A,s.FI,s.prox||'',s.aiuto||'',s.dolore||'No',s.doloreDove||'',s.doloreInt||0,new Date(s.ts).toLocaleString('it-IT')]);
+  const header=['Email','Nome','Ruolo','Squadra','Data','Tipo','Stanchezza','S','F','E','R','A','Focus','Prossimo','Feedback','Dolore','DoloreDove','DoloreInt','Timestamp'];
+  const rows=sessions.map(s=>[s.email,s.nome,s.ruolo,s.squadra||'',s.data,s.tipo,s.stanchezza,s.S,s.F,s.E,s.R,s.A,s.FI,s.prox||'',s.aiuto||'',s.dolore||'No',s.doloreDove||'',s.doloreInt||0,new Date(s.ts).toLocaleString('it-IT')]);
   const csv=[header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='sfera_storico.csv';a.click();
 }
