@@ -135,8 +135,7 @@ textarea{resize:vertical;min-height:68px}
       </select>
       <div id="r-squadra-wrap" style="display:none;margin-bottom:11px">
         <div class="flabel" style="margin-bottom:7px" id="r-squadra-lbl">Squadra</div>
-        <select id="r-squadra-sel" style="display:none"></select>
-        <div id="r-squadra-chk" style="display:none"></div>
+        <div id="r-squadra-chk"></div>
       </div>
       <div class="flabel" style="margin-bottom:7px">Email</div>
       <input type="email" id="r-email" placeholder="nome@esempio.com" style="margin-bottom:11px"/>
@@ -174,8 +173,15 @@ textarea{resize:vertical;min-height:68px}
     <div id="f-squadra-wrap">
       <div class="sec-lbl">Squadra</div>
       <div class="card">
-        <div class="flabel" style="margin-bottom:6px">In quale squadra ti alleni? <span class="req">*</span></div>
+        <div class="flabel" style="margin-bottom:6px">Per quale squadra è questo allenamento? <span class="req">*</span></div>
         <select id="f-squadra"></select>
+        <div style="margin-top:10px"><button type="button" class="btn-s" style="font-size:12px" onclick="toggleMySq()">Le mie squadre</button></div>
+        <div id="f-mysq" style="display:none;margin-top:10px">
+          <div class="fsub" style="margin-bottom:6px">Spunta tutte le squadre in cui giochi</div>
+          <div id="f-mysq-box"></div>
+          <button type="button" class="btn-s" style="font-size:12px;margin-top:6px" onclick="saveAthleteSquadre()">Salva squadre</button>
+          <div class="err" id="f-mysq-err"></div>
+        </div>
       </div>
     </div>
     <div class="sec-lbl">Dati sessione</div>
@@ -346,7 +352,7 @@ let pendingCallbacks={};
 let callId=0;
 
 // ── STORAGE ──────────────────────────────────────────────
-const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbzS7Vi774JrnT8pvcuy7EGb9iXQGz676p3foL08untivW0TuWfTe7bj_08v-ueIzrwD/exec';
+const GS_URL_DEFAULT='https://script.google.com/macros/s/AKfycbxEFlAMEJeg0JIKcI2Fi8-QhwMY4NNdhOQ0T3cdkZfzTK7sQjUdlcsOXpx5-Dg61SLn/exec';
 function getGsUrl(){
   let u=localStorage.getItem('sfera_gs_url')||GS_URL_DEFAULT;
   u=u.trim().replace(/\/exec\/exec$/,'/exec');
@@ -401,13 +407,11 @@ function isStaff(u){return u&&u.tipo==='staff'}
 function onRuoloChange(){
   const val=document.getElementById('r-ruolo').value;
   const wrap=document.getElementById('r-squadra-wrap');
-  const sel=document.getElementById('r-squadra-sel'),chk=document.getElementById('r-squadra-chk');
+  const chk=document.getElementById('r-squadra-chk');
   if(!val){wrap.style.display='none';return}
   const staff=val.split('|')[0]==='staff';
   wrap.style.display='block';
-  document.getElementById('r-squadra-lbl').textContent=staff?'Squadre che vuoi visualizzare (anche più di una)':'La tua squadra';
-  sel.style.display=staff?'none':'block';chk.style.display=staff?'block':'none';
-  sel.innerHTML='<option value="">Seleziona squadra</option>'+SQUADRE.map(q=>`<option>${q}</option>`).join('');
+  document.getElementById('r-squadra-lbl').textContent=staff?'Squadre che vuoi visualizzare (anche più di una)':'Le tue squadre (anche più di una)';
   chk.innerHTML=SQUADRE.map(q=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px"><input type="checkbox" class="r-sq" value="${q}" style="width:auto;margin:0"/>${q}</label>`).join('');
 }
 function squadreChecked(cls){return [...document.querySelectorAll('input.'+cls+':checked')].map(x=>x.value)}
@@ -425,8 +429,8 @@ async function doRegister(){
   if(pass.length<6){err.textContent='Password di almeno 6 caratteri.';err.style.display='block';return}
   if(!getGsUrl()){err.textContent='Configura prima l\'URL Apps Script.';err.style.display='block';return}
   const[tipo,ruolo]=val.split('|');
-  const sq=tipo==='staff'?squadreChecked('r-sq'):[document.getElementById('r-squadra-sel').value].filter(Boolean);
-  if(!sq.length){err.textContent=tipo==='staff'?'Scegli almeno una squadra.':'Scegli la tua squadra.';err.style.display='block';return}
+  const sq=squadreChecked('r-sq');
+  if(!sq.length){err.textContent='Scegli almeno una squadra.';err.style.display='block';return}
   setBusy('r-btn',true,'Registrazione...');
   const res=await apiCall({action:'register',nome,email,pass,tipo,ruolo,squadre:sq.join(', ')});
   setBusy('r-btn',false,'Richiedi accesso');
@@ -492,7 +496,7 @@ function initApp(){
   document.getElementById('nav-staff').style.display=staff?'block':'none';
   document.getElementById('btn-csv').style.display=staff?'inline-flex':'none';
   document.getElementById('f-squadra-wrap').style.display=staff?'none':'block';
-  document.getElementById('f-squadra').innerHTML='<option value="">Seleziona squadra</option>'+SQUADRE.map(q=>`<option${q===curUser.squadre?' selected':''}>${q}</option>`).join('');
+  if(!staff)renderAthleteSquadre();
   if(staff)renderStaffSquadre();
   document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
   ['vw-form','vw-mydata','vw-staff'].forEach(v=>document.getElementById(v).style.display='none');
@@ -542,6 +546,23 @@ async function loadAllData(){
   renderStaff();
 }
 
+function renderAthleteSquadre(){
+  const mine=squadreList(curUser.squadre);
+  const opts=mine.length?mine:SQUADRE;
+  const sel=document.getElementById('f-squadra');
+  sel.innerHTML=(opts.length===1?'':'<option value="">Seleziona squadra</option>')+opts.map(q=>`<option>${q}</option>`).join('');
+  document.getElementById('f-mysq-box').innerHTML=SQUADRE.map(q=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px"><input type="checkbox" class="fa-sq" value="${q}" ${mine.includes(q)?'checked':''} style="width:auto;margin:0"/>${q}</label>`).join('');
+  document.getElementById('f-mysq').style.display=mine.length?'none':'block';
+}
+function toggleMySq(){const e=document.getElementById('f-mysq');e.style.display=e.style.display==='none'?'block':'none'}
+async function saveAthleteSquadre(){
+  const sel=squadreChecked('fa-sq');const err=document.getElementById('f-mysq-err');
+  if(!sel.length){err.textContent='Scegli almeno una squadra.';err.style.display='block';return}
+  err.style.display='none';
+  const res=await apiCall({action:'setSquadre',email:curUser.email,squadre:sel.join(', ')});
+  if(!res||!res.ok){err.textContent='Errore di salvataggio. Riprova.';err.style.display='block';return}
+  curUser.squadre=res.squadre;saveSession(curUser);renderAthleteSquadre();
+}
 function renderStaffSquadre(){
   const mine=squadreList(curUser.squadre);
   document.getElementById('staff-squadre-box').innerHTML=SQUADRE.map(q=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:6px"><input type="checkbox" class="st-sq" value="${q}" ${mine.includes(q)?'checked':''} style="width:auto;margin:0"/>${q}</label>`).join('');
@@ -613,7 +634,7 @@ async function submitForm(){
   setBusy('submit-btn',true,'Invio...');
   const res=await apiCall({action:'add',...session});
   setBusy('submit-btn',false,'Invia autovalutazione');
-  if(res&&res.ok&&squadra&&curUser.squadre!==squadra){curUser.squadre=squadra;saveSession(curUser)}
+  if(res&&res.ok&&squadra&&!squadreList(curUser.squadre).includes(squadra)){curUser.squadre=squadreList(curUser.squadre).concat(squadra).join(', ');saveSession(curUser);renderAthleteSquadre()}
   if(!res||!res.ok){err.textContent='Salvato in locale. Controlla la connessione.';err.style.display='block';}
   showToast('f-toast');resetForm();
 }
